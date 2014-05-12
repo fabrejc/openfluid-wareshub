@@ -1,4 +1,4 @@
-openfluid-wareshub
+OpenFLUID-wareshub
 ==================
 
-System for management of sharing simulators, observers, and more
+System for management of sharing OpenFLUID wares (simulators, observers, builder-extensions) and more
