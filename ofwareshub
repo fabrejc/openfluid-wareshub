@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+
+include_once(__DIR__."/include/CentralMachine.php");
+
+$CommandArgs = array_slice($argv,1);
+$Machine = new CentralMachine(__DIR__."/config");
+
+if (sizeof($CommandArgs)<1)
+{
+  exit("Missing arguments. Aborting.\n");
+}
+else if ($CommandArgs[0] == "system")
+{
+  $Machine->processWHSystemCommand(array_slice($CommandArgs,1));    
+}
+else
+{
+  $Machine->setActiveDefsRepository($CommandArgs[0]);
+  $Machine->processActiveDefsCommand(array_slice($CommandArgs,1));
+}
+
+?>

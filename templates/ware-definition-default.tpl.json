@@ -1,0 +1,10 @@
+{
+	"@@OFWHUB_WARE_ID@@": {
+		"name": "name of the ware",
+    	"description" : "description of the ware",
+		"users-ro": ["*"],
+		"users-rw": ["*"],
+		"mailinglist": [],
+		"webreporting": false
+	}
+}

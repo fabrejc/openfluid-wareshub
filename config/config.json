@@ -1,0 +1,32 @@
+{
+	"general" : {
+		"simulators-dir" : "simulators",
+		"observers-dir" : "observers",
+		"builderexts-dir" : "builderexts",
+		"templates-dir" : "templates",
+		"templates-files" : {
+			"main-apache" : "main-apache-default.tpl.conf",
+			"ware-apache" : "ware-apache-default.tpl.conf",
+			"ware-def" : "ware-definition-default.tpl.json"
+		}
+	},	
+		
+	"definitions" : {
+	    "config-dir" : "config",
+		"config-file" : "config.json",
+		"localconfig-file" : "localconfig.json",
+		"waresdefs-dir" : "definitions",
+		"web-dir" : "web",
+		"templates-dir" : "templates",
+		"templates-files" : {
+			"main-apache" : "main-apache.tpl.conf",
+			"ware-apache" : "ware-apache.tpl.conf",
+			"ware-def" : "ware-definition.tpl.json"
+		}
+	},
+	"instance" : {
+		"wares-git-rootdir" : "wares-git-repositories",
+		"apache-conf-rootdir" : "apache-configs",
+		"apache-conf-mainfile" : "main.conf"
+	}		
+}
