@@ -1,65 +1,17 @@
 OpenFLUID-WaresHub
 ==================
 
-OpenFLUID-WaresHub is a system for management and sharing of OpenFLUID wares (simulators, observers, builder-extensions) and more.
-It is mainly based on git, apache and php scripts
+OpenFLUID-WaresHub is a system for management and sharing of OpenFLUID wares 
+(simulators, observers, builder-extensions) and more.
+It is mainly based on git, apache and php
 
-OpenFLUID-WaresHub uses definitions for wares to instanciate corresponding git repositories, apache based access control, and web reporting
+OpenFLUID-WaresHub uses definitions sets for wares, in order to instantiate corresponding git repositories, setup apache based access control, and provide web reporting
 
-
-## Management tool
-
-### Usage
-
-ofwareshub <defsrepos-name> <command> [arg1] [arg2] [...]
-
-
-### Examples of use
+* [OpenFLUID-WaresHub basics](doc/concepts.md)
+* [Installation, configuration and usage](doc/usage.md)
+* [Manage definitions sets and corresponding instance](doc/defsinstance.md)
+* [Set up informations in wares source code](doc/waresrc.md)
+* [Administration tool usage](doc/ofwareshub-admin.md)
 
 
-#### Display global config
-
-    ofwareshub global displayconfig 
-
-
-#### Check global config
-
-    ofwareshub global checkconfig
-
-
-#### Check definitions config
-
-    ofwareshub <defsrepos-name> checkconfig
-
-
-#### Create a ware definition in the definitions repository
-
-    ofwareshub <defsrepos-name> createdef simulator my.simulator 
-
-
-#### Create an instance repository
-
-    ofwareshub <defsrepos-name> initinstance
-
-
-#### Update an instance repository
-
-    ofwareshub <defsrepos-name> updateinstance apachemain
-
-
-#### Create a simulator in the git based hosting structure
-
-    ofwareshub <defsrepos-name> createware simulator my.simulator
-    
-    
-#### Update settings of a simulator a simulator in the git based hosting structure
-    
-    ofwareshub <defsrepos-name> updateware simulator my.simulator users
- 
-    ofwareshub <defsrepos-name> updateware simulator my.simulator mailinglist
-     
-    ofwareshub <defsrepos-name> updateware simulator my.simulator description 
-    
-    ofwareshub <defsrepos-name> updateware simulator my.simulator allsettings 
-    
-    
+More information about OpenFLUID is available on [www.openfluid-project.org](http://www.openfluid-project.org)
