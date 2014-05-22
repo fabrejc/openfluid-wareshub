@@ -7,7 +7,7 @@ It is mainly based on git, apache and php
 
 OpenFLUID-WaresHub uses definitions sets for wares, in order to instantiate corresponding git repositories, setup apache based access control, and provide web reporting
 
-* [OpenFLUID-WaresHub basics](doc/concepts.md)
+* [OpenFLUID-WaresHub basics](doc/basics.md)
 * [Installation, configuration and usage](doc/usage.md)
 * [Manage definitions sets and corresponding instance](doc/defsinstance.md)
 * [Set up informations in wares source code](doc/waresrc.md)
