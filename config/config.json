@@ -16,6 +16,7 @@
 		"config-file" : "config.json",
 		"localconfig-file" : "localconfig.json",
 		"waresdefs-dir" : "definitions",
+		"githooks-dir" : "githooks",
 		"web-dir" : "web",
 		"templates-dir" : "templates",
 		"templates-files" : {
