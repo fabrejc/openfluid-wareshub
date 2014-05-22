@@ -16,8 +16,13 @@ else if ($CommandArgs[0] == "system")
 }
 else
 {
-  $Machine->setActiveDefsRepository($CommandArgs[0]);
-  $Machine->processActiveDefsCommand(array_slice($CommandArgs,1));
+  $DefsSetPath = getenv("OFWHUB_DEFSSET_PATH");
+  
+  if ($DefsSetPath == "")
+    $DefsSetPath = getcwd();
+  
+  $Machine->setActiveDefinitionsSet($DefsSetPath);
+  $Machine->processActiveDefsCommand($CommandArgs);
 }
 
 ?>

@@ -105,10 +105,7 @@ class CentralMachine
 
     if (!array_key_exists("apache-conf-mainfile", $this->WHSystemConfig["instance"]))
       $this->showErrorAndExit("Missing item \"instance/apache-conf-mainfile\" in configuration. Aborting.");
-    
-    
-    if (!array_key_exists("repositories", $this->WHSystemConfig["definitions"]))
-     $this->showErrorAndExit("Missing section \"definitions/repositories\" in configuration. Aborting.");    
+        
   }  
   
   
@@ -188,32 +185,28 @@ class CentralMachine
   // =====================================================================
   
   
-  function setActiveDefsRepository($Name)
+  function setActiveDefinitionsSet($SetPath)
   {
     $this->checkMinimalWHSystemConfig(); 
    
-    if (array_key_exists($Name,$this->WHSystemConfig["definitions"]["repositories"]))
-    {
-     $this->ActiveDefsPath = $this->WHSystemConfig["definitions"]["repositories"][$Name];
+     $this->ActiveDefsPath = $SetPath;
      
      $ConfigMan = new ConfigManager($this->ActiveDefsPath.
                                     "/".$this->WHSystemConfig["definitions"]["config-dir"].
                                     "/config.json");
      
-     if (file_exists($this->ActiveDefsPath."/localconfig.json"))
-       $ConfigMan->appendFiles($this->ActiveDefsPath.
-                               "/".$this->WHSystemConfig["definitions"]["config-dir"].
-                               "/localconfig.json");
+     $LocalConfigPath = $this->ActiveDefsPath.
+                        "/".$this->WHSystemConfig["definitions"]["config-dir"].
+                        "/localconfig.json";
+     
+     if (file_exists($LocalConfigPath))
+       $ConfigMan->appendFiles($LocalConfigPath);
      
      $this->ActiveDefsConfig = $ConfigMan->getConfig();
 
      $this->checkMinimalActiveDefsConfig();
      
      $this->ActiveDefsInstanceRootPath = $this->ActiveDefsConfig["instance-path"];
-     
-    }
-    else
-      $this->showErrorAndExit("Unknow definitions repository named \"$Name\". Aborting.");      
   }
    
 
@@ -551,12 +544,6 @@ class CentralMachine
          is_array($DefConfig[$WareID]["mailinglist"]) &&
          !empty($DefConfig[$WareID]["mailinglist"]))
      {
-             
-       if (!file_exists($WareInfos["git-repos-path"]."/hooks/post-receive") &&
-           array_key_exists("git-emailhook-path",$this->ActiveDefsConfig))
-       {
-         symlink($this->ActiveDefsConfig["git-emailhook-path"],$WareInfos["git-repos-path"]."/hooks/post-receive");
-       }
 
        $GitCommand = "git";
        if (array_key_exists("git-tool-command", $this->ActiveDefsConfig))
@@ -574,6 +561,23 @@ class CentralMachine
        chdir($CWD);
         
      }
+   }
+   
+   
+   // =====================================================================
+   // =====================================================================
+     
+   
+   private function updateHooks($WareInfos,$DefConfig)
+   {
+     $HookSource = $this->ActiveDefsPath."/".$this->WHSystemConfig["definitions"]["githooks-dir"]."/post-receive"; 
+     $HookTarget = $WareInfos["git-repos-path"]."/hooks/post-receive";
+     
+     if (file_exists($HookTarget))
+       unlink($HookTarget);
+          
+     if (file_exists($HookSource))
+       symlink($HookSource,$HookTarget);
    }
    
    
@@ -629,6 +633,10 @@ class CentralMachine
      // update mailinglist
      echo "-- Updating git mailinglist\n";
      $this->updateMailinglist($WareInfos,$DefConfig);     
+     
+     // update hooks
+     echo "-- Updating git hooks\n";
+     $this->updateHooks($WareInfos,$DefConfig);
      
      echo "-- Creating apache configuration\n";
      
@@ -689,21 +697,26 @@ class CentralMachine
        $TemplateToUse = $this->getTemplate("ware-apache");
        $this->processTemplate($TemplateToUse,$WareInfos["apache-conf-file"],$ExtraRepl);
        
-       $RestartApache = true;
-        
+       $RestartApache = true;        
      }
      
      if ($Args[2] == "description" || $Args[2] == "allsettings")
      {
-       echo "-- Updating description\n";
+       echo "-- Updating git description\n";
        $this->updateDescription($WareInfos,$DefConfig);
      }
      
      if ($Args[2] == "mailinglist" || $Args[2] == "allsettings")
      {
-       echo "-- Updating mailinglist\n";
+       echo "-- Updating git mailinglist\n";
        $this->updateMailinglist($WareInfos,$DefConfig);
      }
+     
+     if ($Args[2] == "hooks" || $Args[2] == "allsettings")
+     {
+       echo "-- Updating git hooks\n";
+       $this->updateHooks($WareInfos,$DefConfig);
+     }     
      
      echo "== Completed\n\n";
      
