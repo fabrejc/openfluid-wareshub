@@ -1,10 +1,10 @@
 #!/usr/bin/env php
 <?php
 
-include_once(__DIR__."/include/CentralMachine.php");
+include_once(__DIR__."/include/CmdLineMachine.php");
 
 $CommandArgs = array_slice($argv,1);
-$Machine = new CentralMachine(__DIR__."/config");
+$Machine = new CmdLineMachine(__DIR__."/config");
 
 if (sizeof($CommandArgs)<1)
 {

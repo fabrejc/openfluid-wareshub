@@ -14,9 +14,9 @@ to the root directory of the definitions sets you want to manage.
 ## Examples of use
 
 
-### Display system config
+### Show system config
 
-    ofwareshub-admin system displayconfig 
+    ofwareshub-admin system showconfig 
 
 
 ### Check system config
@@ -24,12 +24,17 @@ to the root directory of the definitions sets you want to manage.
     ofwareshub-admin system checkconfig
 
 
-### Check definitions config
+### Show definitions set config
+
+    ofwareshub-admin showconfig
+
+
+### Check definitions set config
 
     ofwareshub-admin checkconfig
 
 
-### Create a ware definition in the definitions repository
+### Create a ware definition in the definitions set
 
     ofwareshub-admin createdef simulator my.simulator 
 
@@ -41,7 +46,12 @@ to the root directory of the definitions sets you want to manage.
 
 ### Update an instance repository
 
-    ofwareshub-admin updateinstance apachemain
+    ofwareshub-admin updateinstance
+
+
+### Show report about the definitions set
+
+    ofwareshub-admin showreport
 
 
 ### Create a simulator in the git based hosting structure

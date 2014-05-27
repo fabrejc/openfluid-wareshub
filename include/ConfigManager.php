@@ -27,9 +27,14 @@ class ConfigManager
   	for ($i=0;$i<sizeof($FileList);$i++)
   	{
   	  $Contents = file_get_contents($FileList[$i]);
-  	  $Contents = utf8_encode($Contents);  	 
+  	  $Contents = utf8_encode($Contents);  	   	 
   	  
-      $this->ConfigData = array_replace_recursive($this->ConfigData,json_decode($Contents,true));  	  
+  	  $DecodedJSON = json_decode($Contents,true);
+  	  
+  	  if (json_last_error() != JSON_ERROR_NONE)
+  	    throw new Exception("Wrong json file (".$FileList[$i].")");
+  	  
+      $this->ConfigData = array_replace_recursive($this->ConfigData,$DecodedJSON);  	  
   	}
   }
   
