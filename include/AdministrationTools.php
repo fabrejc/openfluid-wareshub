@@ -276,6 +276,8 @@ class AdministrationTools extends ReportingTools
     $HookSource = $this->ActiveDefsPath."/".$this->WHSystemConfig["definitions"]["githooks-dir"]."/post-receive";
     $HookTarget = $WareInfos["git-repos-path"]."/hooks/post-receive";
      
+    echo "$HookSource\n";
+    echo "$HookTarget\n";
     if (file_exists($HookTarget))
       unlink($HookTarget);
   

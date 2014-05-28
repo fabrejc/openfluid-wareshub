@@ -1,0 +1,6 @@
+Deny from all
+
+<FilesMatch "\.*$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

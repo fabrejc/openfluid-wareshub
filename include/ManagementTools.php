@@ -15,6 +15,8 @@ class ManagementTools
   protected $ActiveDefsInstanceRootPath = "";
   protected $ActiveDefsConfig = array();
   
+  protected static $WARETYPES = array("simulator","observer","builderext");
+  
   
   // =====================================================================
   // =====================================================================
@@ -227,6 +229,10 @@ class ManagementTools
         $WareTypeSubdir."/".
         $WareID;
      
+    $Infos["git-url-subdir"] = $this->ActiveDefsConfig["url-git-subdir"]."/".
+        $WareTypeSubdir."/".
+        $WareID;
+    
     $Infos["git-description-file"] = $Infos["git-repos-path"]."/description";
      
     return $Infos;
