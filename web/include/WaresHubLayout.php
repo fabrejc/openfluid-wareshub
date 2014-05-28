@@ -76,7 +76,8 @@ class WaresHubLayout
   
   private function isHTTPs()
   {
-    return strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'? true : false;
+    //return strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'? true : false;
+    return (array_key_exists("HTTPS",$_SERVER) && strtolower($_SERVER["HTTPS"]) == "on");    
   }
   
   
