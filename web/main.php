@@ -13,6 +13,9 @@ if (isset($whreq_reset))
 }
 
 
+#######
+
+
 if (!isset($_SESSION["wareshub"]))
 {
 
@@ -47,7 +50,16 @@ if (!isset($_SESSION["wareshub"]))
     $DefsSetIntro = "This OpenFLUID WaresHub hosts simulators, observers and builder-extensions for OpenFLUID";
   
   $_SESSION["wareshub"]["labels"]["defsset-intro"] = $DefsSetIntro;
+  
+  
+  if (!isset($DefsSetGitHostname))
+    $DefsSetGitHostname = $_SERVER["SERVER_ADDR"];
+    
+  $_SESSION["wareshub"]["url"]["defsset-githost"] = $DefsSetGitHostname; 
 }  
+
+
+#######
 
 
 include_once(__DIR__."/include/WaresHubLayout.php");
@@ -66,6 +78,5 @@ if (isset($whreq_wareid))
 
 $Layout->generatePage();
 
-//phpinfo();
 
 ?>

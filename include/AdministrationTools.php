@@ -177,21 +177,12 @@ class AdministrationTools extends ReportingTools
     }
     else
     {
-      $RWUsers = array_unique($DefConfig[$WareID]["users-rw"]);
+      $RWUsers = $DefConfig[$WareID]["users-rw"];
+      $ROUsers = $DefConfig[$WareID]["users-ro"];
+      
+      $this->processUsersGrants($ROUsers,$RWUsers);
        
-      // add of global rw users
-      if (array_key_exists("wares-users-rw",$this->ActiveDefsConfig));
-      $RWUsers = array_unique(array_merge($RWUsers,$this->ActiveDefsConfig["wares-users-rw"]));
-       
-      $ROUsers = array_unique($DefConfig[$WareID]["users-ro"]);
-       
-      // add of global ro users
-      if (array_key_exists("wares-users-ro",$this->ActiveDefsConfig));
-      $ROUsers = array_unique(array_merge($ROUsers,$this->ActiveDefsConfig["wares-users-ro"]));
-  
-      $ROUsers = array_unique(array_merge($ROUsers,$RWUsers));
-       
-      if (in_array("*",$DefConfig[$WareID]["users-ro"]))
+      if (in_array("*",$ROUsers))
         $ExtraRepl["@@OFWHUB_WARE_ROUSERS_STRING@@"] = "\t# Warning: everybody is granted to read";
       else
         $ExtraRepl["@@OFWHUB_WARE_ROUSERS_STRING@@"] =

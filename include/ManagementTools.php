@@ -270,6 +270,35 @@ class ManagementTools
     return $DefConfig;
   }
   
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
+  public function processUsersGrants(&$ROUsers,&$RWUsers)
+  {     
+    $RWUsers = array_unique($RWUsers);
+     
+    // add of RW users in definitions set
+    if (array_key_exists("wares-users-rw",$this->ActiveDefsConfig));
+    $RWUsers = array_unique(array_merge($RWUsers,$this->ActiveDefsConfig["wares-users-rw"]));
+             
+    $ROUsers = array_unique($ROUsers);
+
+    // add of RO users in definitions set 
+    if (array_key_exists("wares-users-ro",$this->ActiveDefsConfig));
+    $ROUsers = array_unique(array_merge($ROUsers,$this->ActiveDefsConfig["wares-users-ro"]));
+    
+    $ROUsers = array_unique(array_merge($ROUsers,$RWUsers));
+        
+    if (in_array("*",$ROUsers))
+        $ROUsers = array("*");    
+    
+    sort($ROUsers);
+    sort($RWUsers);
+    
+  }
+  
 }
 
 ?>

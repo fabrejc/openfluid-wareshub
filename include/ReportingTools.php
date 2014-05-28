@@ -135,41 +135,54 @@ class ReportingTools extends ManagementTools
             $PathParts["extension"] == "json")
         {
           $WareInfos = $this->getWareInfos($Type,$PathParts["filename"]);
-    
+                    
           if (is_file($WareInfos["apache-conf-file"]) && is_dir($WareInfos["git-repos-path"]))
           {
             $ID = $WareInfos["ware-id"];
-            $Report[$TypeKey][$ID] = array();
-            $Report[$TypeKey][$ID]["branches"] = array();
-            $Report[$TypeKey][$ID]["compat-versions"] = array();
-            $Report[$TypeKey][$ID]["git-url-subdir"] = $WareInfos["git-url-subdir"];
             
-            if (is_file($WareInfos["git-repos-path"]."/wareshub-data/branches.json"))
+            // definition
+            $WareDefinition = $this->loadandCheckDefinition($WareInfos);
+            
+            if (array_key_exists("webreporting",$WareDefinition[$ID]) &&
+                $WareDefinition[$ID]["webreporting"] == "true")
             {
-              $Contents = file_get_contents($WareInfos["git-repos-path"]."/wareshub-data/branches.json");
-              $Contents = utf8_encode($Contents);
-              	
-              $DecodedJSON = json_decode($Contents,true);
-              	
-              if (json_last_error() == JSON_ERROR_NONE)
+              $Report[$TypeKey][$ID] = array();
+              $Report[$TypeKey][$ID]["branches"] = array();
+              $Report[$TypeKey][$ID]["compat-versions"] = array();
+              $Report[$TypeKey][$ID]["git-url-subdir"] = $WareInfos["git-url-subdir"];
+              $Report[$TypeKey][$ID]["definition"] = $WareDefinition[$ID];
+                            
+              $this->processUsersGrants($Report[$TypeKey][$ID]["definition"]["users-ro"],
+                                        $Report[$TypeKey][$ID]["definition"]["users-rw"]);
+              
+              // branches
+              if (is_file($WareInfos["git-repos-path"]."/wareshub-data/branches.json"))
               {
-                if (array_key_exists("branches",$DecodedJSON) &&
-                    is_array($DecodedJSON["branches"]))
+                $Contents = file_get_contents($WareInfos["git-repos-path"]."/wareshub-data/branches.json");
+                $Contents = utf8_encode($Contents);
+                 
+                $DecodedJSON = json_decode($Contents,true);
+                 
+                if (json_last_error() == JSON_ERROR_NONE)
                 {
-                  foreach ($DecodedJSON["branches"] as $Branch)
+                  if (array_key_exists("branches",$DecodedJSON) &&
+                      is_array($DecodedJSON["branches"]))
                   {
-                    $Report[$TypeKey][$ID]["branches"][$Branch] = array();
-
-                    if (strpos($Branch,"openfluid-") == 0 &&
-                        preg_match("#(\d+\.\d+(\.\d+)*)$#", $Branch, $MatchVersion))
+                    foreach ($DecodedJSON["branches"] as $Branch)
                     {
-                      array_push($Report[$TypeKey][$ID]["compat-versions"],$MatchVersion[0]);
+                      $Report[$TypeKey][$ID]["branches"][$Branch] = array();
+
+                      if (strpos($Branch,"openfluid-") == 0 &&
+                          preg_match("#(\d+\.\d+(\.\d+)*)$#", $Branch, $MatchVersion))
+                      {
+                        array_push($Report[$TypeKey][$ID]["compat-versions"],$MatchVersion[0]);
+                      }
                     }
-                  }                    
+                  }
                 }
               }
+              rsort($Report[$TypeKey][$ID]["compat-versions"]);
             }
-            rsort($Report[$TypeKey][$ID]["compat-versions"]);
           }
         }    
       }

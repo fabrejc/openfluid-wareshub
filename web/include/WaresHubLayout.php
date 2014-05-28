@@ -20,7 +20,7 @@ class WaresHubLayout
   
   public function setWareType($WareType)
   {
-    $this->WareType = $WareType;    
+    $this->WareType = $WareType;
   }
   
   
@@ -43,9 +43,30 @@ class WaresHubLayout
     $CompatVersions = "<i>unknown</i>";
     
     if (!empty($VersionsArray))
-      $CompatVersions = implode(", ",$VersionsArray); 
+    {
+      $CompatVersions = $VersionsArray[0]; 
+      
+      if (sizeof($VersionsArray) > 1)
+      {
+        $CompatVersions .= " <span class='text-muted'>and ".implode(", ",array_slice($VersionsArray,1))."</span>";
+      }
+    } 
 
     return $CompatVersions;
+  }
+  
+
+  // =====================================================================
+  // =====================================================================
+  
+  
+  private function getGrantedUsersString($UsersArray)
+  {
+    if (empty($UsersArray))
+      return "<i>no user</i>";
+    else if (in_array("*",$UsersArray))
+      return "<i>all users</i>";
+    else return implode(", ",$UsersArray);
   }
   
   
@@ -66,7 +87,7 @@ class WaresHubLayout
     if ($this->isHTTPs())
       $Protocol = "https://";
     
-    return $Protocol.$_SERVER["SERVER_NAME"]."/".$URLSubDir;
+    return $Protocol.$_SESSION["wareshub"]["url"]["defsset-githost"]."/".$URLSubDir;
   }
   
   // =====================================================================
@@ -153,9 +174,12 @@ class WaresHubLayout
     $TypeKey = $this->WareType."s";
     $WareData = $_SESSION["wareshub"]["reporting"][$TypeKey][$this->WareID];
     
-    echo "<div class='container'>";
-    
     echo "<br/>";
+    
+    echo "<div class='container'>
+          <div class='row'>";
+    
+    echo "<div class='col-md-8'>";
     
     echo "<h3>
             <a href='".$_SERVER["SCRIPT_NAME"]."'><span class='glyphicon glyphicon-th-list'></span></a>&nbsp;&nbsp;/
@@ -163,7 +187,31 @@ class WaresHubLayout
             ".$this->WareID."</h3><br/>";
     
     echo "OpenFLUID compatibility versions: ".$this->getCompatibilityString($WareData["compat-versions"])."<br/>";
-    echo "URL for git clone: ".$this->getGitURL($WareData["git-url-subdir"])."<br/>";
+    echo "<br>";
+    echo "URL for git clone:<br>
+         &nbsp;&nbsp;&nbsp;".$this->getGitURL($WareData["git-url-subdir"])."<br/>";
+    
+    echo "</div>";
+    
+    echo "<div class='col-md-4'>";
+    
+    echo "
+      <div class='panel panel-default'>
+        <div class='panel-heading'>Granted users</div>        
+        <div class='panel-body'>
+          Read access:  
+          <li>".$this->getGrantedUsersString($WareData["definition"]["users-ro"])."</li><br/>
+          Write access:    
+          <li>".$this->getGrantedUsersString($WareData["definition"]["users-rw"])."</li>
+         </div>
+      </div>
+    ";
+    
+    echo "</div>";
+    
+    echo "</div>";
+    
+    echo "<hr/>";
     
     echo "</div>";
   }
