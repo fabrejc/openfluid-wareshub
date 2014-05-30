@@ -2,8 +2,11 @@
 
 class WaresHubLayout
 {
-  private $WareID;
+  
   private $WareType;
+  private $WareID;
+  private $WareBranch;
+  
   
   private static $WARETYPES = array("simulator","observer","builderext");
   
@@ -11,6 +14,7 @@ class WaresHubLayout
   {
     $this->WareID = "";
     $this->WareType = "";
+    $this->WareBranch = "";
   }
    
   
@@ -31,6 +35,16 @@ class WaresHubLayout
   public function setWareID($WareID)
   {
     $this->WareID = $WareID;
+  }
+  
+
+  // =====================================================================
+  // =====================================================================
+  
+  
+  public function setWareBranch($WareBranch)
+  {
+    $this->WareBranch = $WareBranch;
   }
   
   
@@ -69,6 +83,32 @@ class WaresHubLayout
     else return implode(", ",$UsersArray);
   }
   
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
+  private function getBranchesString($BranchesArray)
+  {
+    if (empty($BranchesArray))
+      return "<i>none</i>";
+    else 
+    {
+      $TmpStr = "<br/>";
+      foreach($BranchesArray as $BranchName => $Branchinfos)
+      {
+        $TmpStr .= "&nbsp;&nbsp;&nbsp;-&nbsp;<a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."&wareid=".$this->WareID."&warebranch=".$BranchName."'>$BranchName</a>";
+        
+        $Pos = strpos($BranchName,"openfluid-");        
+        if ($Pos !== false && $Pos == 0 && preg_match("#(\d+\.\d+(\.\d+)*)$#", $BranchName, $MatchVersion))
+          $TmpStr .= "&nbsp;&nbsp;<span class='glyphicon glyphicon-heart-empty text-muted'></span>";
+        
+        $TmpStr .= "</br>";        
+      }
+      return $TmpStr;
+    }
+    
+  }
   
   // =====================================================================
   // =====================================================================
@@ -177,33 +217,39 @@ class WaresHubLayout
     
     echo "<br/>";
     
-    echo "<div class='container'>
-          <div class='row'>";
-    
-    echo "<div class='col-md-8'>";
+    echo "<div class='container'>";
     
     echo "<h3>
-            <a href='".$_SERVER["SCRIPT_NAME"]."'><span class='glyphicon glyphicon-th-list'></span></a>&nbsp;&nbsp;/
+            <a href='".$_SERVER["SCRIPT_NAME"]."'><span class='glyphicon glyphicon-list'></span></a>&nbsp;&nbsp;/
                 <a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."'>".$TypeKey."</a>&nbsp;/
             ".$this->WareID."</h3><br/>";
+
+    echo "<div class='row'>";
     
-    echo "OpenFLUID compatibility versions: ".$this->getCompatibilityString($WareData["compat-versions"])."<br/>";
-    echo "<br>";
-    echo "URL for git clone:<br>
-         &nbsp;&nbsp;&nbsp;".$this->getGitURL($WareData["git-url-subdir"])."<br/>";
+    echo "<div class='col-md-6'>";
+    
+
+    
+    echo "OpenFLUID version(s): ".$this->getCompatibilityString($WareData["compat-versions"])."<br/>";
+    echo "<br/>";
+    
+    echo "Available branche(s): ".$this->getBranchesString($WareData["branches"])."<br/>";
+
     
     echo "</div>";
     
-    echo "<div class='col-md-4'>";
+    echo "<div class='col-md-6'>";
     
     echo "
-      <div class='panel panel-default'>
-        <div class='panel-heading'>Granted users</div>        
+      <div class='panel panel-success'>
+        <div class='panel-heading'>git access</div>        
         <div class='panel-body'>
-          Read access:  
-          <li>".$this->getGrantedUsersString($WareData["definition"]["users-ro"])."</li><br/>
-          Write access:    
-          <li>".$this->getGrantedUsersString($WareData["definition"]["users-rw"])."</li>
+        
+         <b>URL:</b>
+         <input class='' type='text' readonly='readonly' size='40' value='".$this->getGitURL($WareData["git-url-subdir"])."'></input><br/>
+         <br>         
+          <li>Read access for ".$this->getGrantedUsersString($WareData["definition"]["users-ro"])."</li>
+          <li>Write access for ".$this->getGrantedUsersString($WareData["definition"]["users-rw"])."</li>
          </div>
       </div>
     ";
@@ -213,6 +259,20 @@ class WaresHubLayout
     echo "</div>";
     
     echo "<hr/>";
+    
+    echo "<h4>";
+    
+    if (empty($this->WareBranch))
+    {
+      echo "<i>This ".$this->WareType." seems to be empty<i>";
+    }
+    else
+    {
+      echo "Informations on branch ".$this->WareBranch;
+    }
+    echo "</h4>";
+    
+    echo "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='text-muted'>Available soon!</span>";
     
     echo "</div>";
   }

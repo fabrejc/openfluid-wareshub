@@ -69,12 +69,36 @@ $Layout = new WaresHubLayout();
 if (isset($whreq_waretype))
 {
   $Layout->setWareType($whreq_waretype);
+  
+  if (isset($whreq_wareid))
+  {
+    $Layout->setWareID($whreq_wareid);
+    
+    if (isset($whreq_warebranch))
+    {
+      $Layout->setWareBranch($whreq_warebranch);
+    }
+    else
+    {
+      $WareData = $_SESSION["wareshub"]["reporting"][$whreq_waretype."s"][$whreq_wareid];
+      
+      if (!empty($WareData["compat-versions"]))
+      {
+        // take the higher compat version as default branch
+        $Layout->setWareBranch("openfluid-".$WareData["compat-versions"][0]);
+      }
+      else if (!empty($WareData["branches"]))
+      {
+        // take the first branch
+        reset($WareData["branches"]);
+        $Layout->setWareBranch(key($WareData["branches"]));
+      }
+    }
+  }
+  
 }
 
-if (isset($whreq_wareid))
-{
-  $Layout->setWareID($whreq_wareid);
-}
+
 
 $Layout->generatePage();
 
