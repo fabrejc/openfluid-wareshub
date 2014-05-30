@@ -172,7 +172,9 @@ class ReportingTools extends ManagementTools
                     {
                       $Report[$TypeKey][$ID]["branches"][$Branch] = array();
 
-                      if (strpos($Branch,"openfluid-") == 0 &&
+                      $Pos = strpos($Branch,"openfluid-");
+                      
+                      if ($Pos !== false && $Pos == 0 &&
                           preg_match("#(\d+\.\d+(\.\d+)*)$#", $Branch, $MatchVersion))
                       {
                         array_push($Report[$TypeKey][$ID]["compat-versions"],$MatchVersion[0]);

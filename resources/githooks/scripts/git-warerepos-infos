@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 extract_branch_file () { 
    git show $1:$2 >/dev/null 2>&1 && git show $1:$2 > wareshub-data/$1/$2
@@ -8,14 +8,16 @@ extract_branch_file () {
 rm -rf wareshub-data
 mkdir -p wareshub-data
 
+HEADBRANCH=""
+
 BRANCHES=`git for-each-ref --format='%(refname:short)' refs/heads`
 
-echo "{\n  \"branches\" : [" > wareshub-data/branches.json
+echo -e "{\n  \"branches\" : [" > wareshub-data/branches.json
 
 for B in $BRANCHES
 do
 
-  echo "    \"$B\"," >> wareshub-data/branches.json
+  echo -e "    \"$B\"," >> wareshub-data/branches.json
 
   # create directory for branch
   mkdir -p wareshub-data/$B
@@ -27,14 +29,25 @@ do
   extract_branch_file $B LICENSE
   extract_branch_file $B COPYING
   
+  # discover higher openfluid-* branch
+  if [[ "$B" == openfluid-* ]] && [[ "$B" > "$HEADBRANCH" ]];
+  then
+    HEADBRANCH=$B
+  fi
+  
   # get commits history for branch 
-  echo "{" > wareshub-data/$B/commits-history.json
+  echo -e "{" > wareshub-data/$B/commits-history.json
   git log $B --pretty=format:"  \"%h\" : {%n    \"author\" : \"%an\",%n    \"email\" : \"%ae\",%n    \"date\" : \"%ad\",%n    \"subject\" : \"%s\"%n  }," >> wareshub-data/$B/commits-history.json
   printf 's/,$//\nw\nq\n' | ed -s wareshub-data/$B/commits-history.json > /dev/null 2>&1
-  echo "}" >> wareshub-data/$B/commits-history.json
+  echo -e "}" >> wareshub-data/$B/commits-history.json
   
 done
  
 printf 's/,$//\nw\nq\n' | ed -s wareshub-data/branches.json > /dev/null 2>&1 
-echo "  ]\n}" >> wareshub-data/branches.json
+echo -e "  ]\n}" >> wareshub-data/branches.json
+
+
+# set default branch to higher openfluid-* branch
+git symbolic-ref -q HEAD refs/heads/$HEADBRANCH
+
  
