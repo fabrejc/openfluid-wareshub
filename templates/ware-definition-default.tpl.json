@@ -3,6 +3,6 @@
 		"users-ro": [],
 		"users-rw": [],
 		"mailinglist": [],
-		"webreport": false
+		"webreporting": "false"
 	}
 }
