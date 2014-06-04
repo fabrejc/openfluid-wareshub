@@ -156,9 +156,9 @@ class ReportingTools extends ManagementTools
                                         $Report[$TypeKey][$ID]["definition"]["users-rw"]);
               
               // branches
-              if (is_file($WareInfos["git-repos-path"]."/wareshub-data/branches.json"))
+              if (is_file($WareInfos["git-repos-path"]."/wareshub-data/gitstats.json"))
               {
-                $Contents = file_get_contents($WareInfos["git-repos-path"]."/wareshub-data/branches.json");
+                $Contents = file_get_contents($WareInfos["git-repos-path"]."/wareshub-data/gitstats.json");
                 $Contents = utf8_encode($Contents);
                  
                 $DecodedJSON = json_decode($Contents,true);
@@ -181,6 +181,10 @@ class ReportingTools extends ManagementTools
                       }
                     }
                   }
+                  
+                  if (array_key_exists("committers",$DecodedJSON))
+                    $Report[$TypeKey][$ID]["committers"] = $DecodedJSON["committers"];                  
+                  
                 }
               }
               rsort($Report[$TypeKey][$ID]["compat-versions"]);
@@ -191,9 +195,35 @@ class ReportingTools extends ManagementTools
       ksort($Report[$TypeKey]);
     }
             
-    return $Report;
-    
+    return $Report;    
   }
+  
+
+  // =====================================================================
+  // =====================================================================  
+  
+  
+  public function getWebReportForBranch($WareType,$WareID,$Branch)
+  {
+    $Report = array();
+    
+    $WareInfos = $this->getWareInfos($WareType,$WareID);
+    
+    if (is_file($WareInfos["git-repos-path"]."/wareshub-data/".$Branch."/commits-history.json"))
+    {
+      $JSONContents = file_get_contents($WareInfos["git-repos-path"]."/wareshub-data/".$Branch."/commits-history.json");
+      $JSONContents = utf8_encode($JSONContents);
+       
+      $DecodedJSON = json_decode($JSONContents,true);
+             
+      if (json_last_error() == JSON_ERROR_NONE)
+      {
+        $Report["commits-history"] = $DecodedJSON;
+      }
+    }
+    
+    return $Report;
+  }	
   
 }
 

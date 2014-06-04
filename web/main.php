@@ -3,10 +3,8 @@
 
 session_start();
 
-import_request_variables("gP", "whreq_");
 
-
-if (isset($whreq_reset))
+if (isset($_REQUEST["reset"]))
 {
   session_destroy();
   header("Location: ".$_SERVER["SCRIPT_NAME"]);
@@ -16,17 +14,17 @@ if (isset($whreq_reset))
 #######
 
 
-if (!isset($_SESSION["wareshub"]))
-{
+$WHSytemRootPath = realpath(__DIR__."/..");
+$DefsSetRootPath = realpath(dirname($_SERVER["SCRIPT_FILENAME"])."/..");
 
-  $WHSytemRootPath = realpath(__DIR__."/..");
-  $DefsSetRootPath = realpath(dirname($_SERVER["SCRIPT_FILENAME"])."/..");  
-  
-  include_once($WHSytemRootPath."/include/ReportingTools.php");
-  
-  $RTools = new ReportingTools($WHSytemRootPath."/config");
-  $RTools->setActiveDefinitionsSet($DefsSetRootPath);
-  
+include_once($WHSytemRootPath."/include/ReportingTools.php");
+
+$RTools = new ReportingTools($WHSytemRootPath."/config");
+$RTools->setActiveDefinitionsSet($DefsSetRootPath);
+
+
+if (!isset($_SESSION["wareshub"]))
+{  
   $Report = $RTools->getWebReport();
   
   $_SESSION["wareshub"] = array();
@@ -66,38 +64,52 @@ include_once(__DIR__."/include/WaresHubLayout.php");
 
 $Layout = new WaresHubLayout();
 
-if (isset($whreq_waretype))
+if (isset($_REQUEST["waretype"]))
 {
-  $Layout->setWareType($whreq_waretype);
+  $Layout->setWareType($_REQUEST["waretype"]);
   
-  if (isset($whreq_wareid))
+  if (isset($_REQUEST["wareid"]))
   {
-    $Layout->setWareID($whreq_wareid);
+    $Layout->setWareID($_REQUEST["wareid"]);
+    $CurrentBranch = "";
     
-    if (isset($whreq_warebranch))
+    if (isset($_REQUEST["warebranch"]))
     {
-      $Layout->setWareBranch($whreq_warebranch);
+      $CurrentBranch = $_REQUEST["warebranch"];
     }
     else
     {
-      $WareData = $_SESSION["wareshub"]["reporting"][$whreq_waretype."s"][$whreq_wareid];
+      $WareData = $_SESSION["wareshub"]["reporting"][$_REQUEST["waretype"]."s"][$_REQUEST["wareid"]];
+      
+      
       
       if (!empty($WareData["compat-versions"]))
       {
         // take the higher compat version as default branch
-        $Layout->setWareBranch("openfluid-".$WareData["compat-versions"][0]);
+        $CurrentBranch = "openfluid-".$WareData["compat-versions"][0];
+        $Layout->setWareBranch($CurrentBranch);
       }
       else if (!empty($WareData["branches"]))
       {
         // take the first branch
         reset($WareData["branches"]);
-        $Layout->setWareBranch(key($WareData["branches"]));
+        $CurrentBranch = key($WareData["branches"]);
       }
     }
+
+    if (! empty ( $CurrentBranch ))
+    {
+      if (empty ( $WareData ["branches"] [$CurrentBranch] ))
+      {
+        $_SESSION ["wareshub"] ["reporting"] [$_REQUEST ["waretype"] . "s"] [$_REQUEST ["wareid"]] ["branches"] [$CurrentBranch] = $RTools->getWebReportForBranch ( $_REQUEST ["waretype"], $_REQUEST ["wareid"], $CurrentBranch );
+      }
+      
+      $Layout->setWareBranch ( $CurrentBranch );
+    }
+    
   }
   
 }
-
 
 
 $Layout->generatePage();

@@ -88,27 +88,83 @@ class WaresHubLayout
   // =====================================================================
   
   
-  private function getBranchesString($BranchesArray)
+  private function getBranchStarString($BranchName)
+  {
+    $StarString = "";
+    
+    $Pos = strpos($BranchName,"openfluid-");
+    if ($Pos !== false && $Pos == 0 && preg_match("#(\d+\.\d+(\.\d+)*)$#", $BranchName, $MatchVersion))
+      $StarString = "&nbsp;<span class='glyphicon glyphicon-star-empty branch-star'></span>";
+    
+    return $StarString;
+  }
+
+
+  // =====================================================================
+  // =====================================================================
+  
+  
+  private function getBranchesDropdown($BranchesArray)
   {
     if (empty($BranchesArray))
       return "<i>none</i>";
-    else 
-    {
-      $TmpStr = "<br/>";
-      foreach($BranchesArray as $BranchName => $Branchinfos)
+    else
+    {      
+      $TmpStr = "<div class='btn-group'><button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>";
+      $TmpStr .= $this->WareBranch.$this->getBranchStarString($this->WareBranch)."&nbsp;&nbsp;<span class='caret'></span>";
+      $TmpStr .= "</button>";
+      $TmpStr .= "<ul class='dropdown-menu' role='menu'>";
+      
+      foreach ($BranchesArray as $BranchName => $BranchInfos)
       {
-        $TmpStr .= "&nbsp;&nbsp;&nbsp;-&nbsp;<a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."&wareid=".$this->WareID."&warebranch=".$BranchName."'>$BranchName</a>";
+        $StarString = $this->getBranchStarString($BranchName);
         
-        $Pos = strpos($BranchName,"openfluid-");        
-        if ($Pos !== false && $Pos == 0 && preg_match("#(\d+\.\d+(\.\d+)*)$#", $BranchName, $MatchVersion))
-          $TmpStr .= "&nbsp;&nbsp;<span class='glyphicon glyphicon-heart-empty text-muted'></span>";
-        
-        $TmpStr .= "</br>";        
+        $TmpStr .= "<li><a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."&wareid=".$this->WareID."&warebranch=".$BranchName."'>$BranchName $StarString</a></li>";
+  
       }
+      $TmpStr .= "</ul>";
+      $TmpStr .= "</div>";
+      
       return $TmpStr;
     }
-    
+  
   }
+
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
+  private function getContributorsString($CommittersArray)
+  {
+    $TmpStr = "";
+    
+    if (empty($CommittersArray))
+      $TmpStr = "<i>unknown</i>";
+    else
+    {
+      $TmpStr .= "<div class='contributors-list'>";
+      
+      foreach($CommittersArray as $CommitterName => $CommitterInfos)  
+      {
+        $TmpStr .= "              
+              <div class='media contributor'>
+                <a class='pull-left' href='#'>
+                  <img class='media-object' src='http://www.gravatar.com/avatar/".md5(strtolower(trim($CommitterInfos["email"])))."?s=36&d=mm'/>
+                </a>
+                <div class='media-body'>                
+                  ".$CommitterName."<br/>
+                  <span class='text-muted commit-author'>".$CommitterInfos["count"]." commit(s)</span>
+                </div>
+              </div>             
+            ";
+      }
+      $TmpStr .= "</div>";
+    }
+      
+    return $TmpStr;
+  }
+  
   
   // =====================================================================
   // =====================================================================
@@ -121,6 +177,10 @@ class WaresHubLayout
   }
   
   
+  // =====================================================================
+  // =====================================================================
+  
+  
   private function getGitURL($URLSubDir)
   {
     $Protocol = "http://";
@@ -131,84 +191,56 @@ class WaresHubLayout
     return $Protocol.$_SESSION["wareshub"]["url"]["defsset-githost"]."/".$URLSubDir;
   }
   
+  
   // =====================================================================
   // =====================================================================
+
   
-  
-  private function generateHomeContent()
+  private function printCommitsHistory()
   {
-    if (!in_array($this->WareType,static::$WARETYPES))
-      $this->WareType = "simulator";
-    
     $TypeKey = $this->WareType."s";
-    
-    echo "<div class='jumbotron'>
-      <div class='container'>
-    ";
-    
-    echo $_SESSION["wareshub"]["labels"]["defsset-intro"];
-    echo "<br/>";      
-    echo "&nbsp;&nbsp;<a href='".$_SERVER["SCRIPT_NAME"]."?reset=1'><span class='glyphicon glyphicon-refresh'></span>&nbsp;Reload informations</a>";
-    
-    echo "
-        <br/><br/>        
-        <div style='margin-left: 100px;'>        
-        <ul class='nav nav-pills'>
-    ";
-    
-    foreach (static::$WARETYPES as $PillType)
+    $WareData = $_SESSION["wareshub"]["reporting"][$TypeKey][$this->WareID];
+
+    foreach($WareData["branches"][$this->WareBranch]["commits-history"] as $CommitID => $CommitData)
     {
-      echo "<li";
-      if ($PillType == $this->WareType) echo " class='active'";
-      echo ">";
-      echo "<a href='".$_SERVER["SCRIPT_NAME"]."?waretype=${PillType}'>";
-      echo ucfirst("${PillType}s");
-      echo "  <span class='badge'>".sizeof($_SESSION["wareshub"]["reporting"][$PillType."s"])."</span>";      
-      echo "</a></li>";
+      echo "
+          <div class='panel panel-info panel-commit'>
+            <div class='panel-heading commit-heading'>".$CommitData["date"]."&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;$CommitID</div>
+            <div class='panel-body'>
+              <div class='media'>
+                <a class='pull-left' href='#'>
+                  <img class='media-object' src='http://www.gravatar.com/avatar/".md5(strtolower(trim($CommitData["authoremail"])))."?s=36&d=mm'/>
+                </a>
+                <div class='media-body'>                
+                  <b>".$CommitData["subject"]."</b><br/>
+                  <span class='text-muted commit-author'>".$CommitData["authorname"]."</span><br/>
+                </div>
+              </div> 
+            </div>               
+          </div>
+          ";
     }
-    
-    echo "</ul>
-    
-        </div>
-        ";
-    
-    
-    echo "</div></div>";
-    
-    echo "<div class='container'>";
-    
-    $WareCount = sizeof($_SESSION["wareshub"]["reporting"][$TypeKey]);
-    
-    if ($WareCount == 0)
-    {
-      echo "<i>There is no $this->WareType available"; 
-    }
-    else
-    {
-      $WareTypeInfos = $_SESSION["wareshub"]["reporting"][$TypeKey];
-      
-      echo "<table class='table'>";
-      echo "<tr><th>ID</th><th>OpenFLUID compatibility</th></tr>";
-      
-      foreach ($WareTypeInfos as $WareID => $WareData)
-      {        
-        
-        echo "<tr>
-                <td><a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."&wareid=".$WareID."'>$WareID</a></td>
-                <td>".$this->getCompatibilityString($WareData["compat-versions"])."</td>
-              </tr>";
-      }
-      
-      echo "</table>";
-    }
-    
-    echo "</div>";
+  }
+
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
+  private function printGeneralInformations()
+  {
+    $TypeKey = $this->WareType."s";
+    $WareData = $_SESSION["wareshub"]["reporting"][$TypeKey][$this->WareID];
+
+    echo "<br/>";
+    echo "&nbsp;&nbsp;&nbsp;&nbsp;".sizeof($WareData["branches"][$this->WareBranch]["commits-history"])." commit(s)";
+    echo "<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;<i>More informations available soon!</i>";    
   }
   
   
   // =====================================================================
   // =====================================================================
-  
+    
   
   private function generateWareContent()
   {
@@ -233,7 +265,11 @@ class WaresHubLayout
     echo "OpenFLUID version(s): ".$this->getCompatibilityString($WareData["compat-versions"])."<br/>";
     echo "<br/>";
     
-    echo "Available branche(s): ".$this->getBranchesString($WareData["branches"])."<br/>";
+    if (array_key_exists("committers",$WareData))
+    {    
+      echo "Contributors: ";
+      echo $this->getContributorsString($WareData["committers"]);    
+    }
 
     
     echo "</div>";
@@ -258,21 +294,116 @@ class WaresHubLayout
     
     echo "</div>";
     
-    echo "<hr/>";
-    
-    echo "<h4>";
-    
+    echo "<hr class='warepage'>";    
+        
     if (empty($this->WareBranch))
     {
-      echo "<i>This ".$this->WareType." seems to be empty<i>";
+      echo "<h5><i>This ".$this->WareType." seems to be empty<i></h5>";
     }
     else
     {
-      echo "Informations on branch ".$this->WareBranch;
+      echo "<h4>Branch: ".$this->getBranchesDropdown($WareData["branches"])."</h4><br/>";      
+      
+      echo "
+      <ul class='nav nav-tabs'>
+        <li class='active'><a href='#general' data-toggle='tab'>General information</a></li>
+        <li><a href='#commits' data-toggle='tab'>Commits history</a></li>
+      </ul>";
+      
+      echo "
+      <div class='tab-content'>
+        <div class='tab-pane active' id='general'>";
+      $this->printGeneralInformations();
+      echo "  
+        </div>
+        <div class='tab-pane' id='commits'><br/>";
+      $this->printCommitsHistory();
+      echo  "
+        </div>
+      </div>
+      ";
     }
-    echo "</h4>";
+   
     
-    echo "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='text-muted'>Available soon!</span>";
+    echo "</div>";
+  }
+
+  
+  // =====================================================================
+  // =====================================================================
+
+  
+  private function generateHomeContent()
+  {
+    if (! in_array ( $this->WareType, static::$WARETYPES ))
+      $this->WareType = "simulator";
+    
+    $TypeKey = $this->WareType . "s";
+    
+    echo "<div class='jumbotron'>
+        <div class='container'>
+      ";
+    
+    echo $_SESSION ["wareshub"] ["labels"] ["defsset-intro"];
+    echo "<br/>";
+    echo "&nbsp;&nbsp;<a href='" . $_SERVER ["SCRIPT_NAME"] . "?reset=1'><span class='glyphicon glyphicon-refresh'></span>&nbsp;Reload informations</a>";
+    
+    echo "
+          <br/><br/>
+          <div style='margin-left: 100px;'>
+          <ul class='nav nav-pills'>
+      ";
+    
+    foreach ( static::$WARETYPES as $PillType )
+    {
+      echo "<li";
+      if ($PillType == $this->WareType)
+        echo " class='active'";
+      echo ">";
+      echo "<a href='" . $_SERVER ["SCRIPT_NAME"] . "?waretype=${PillType}'>";
+      echo ucfirst ( "${PillType}s" );
+      echo "  <span class='badge'>" . sizeof ( $_SESSION ["wareshub"] ["reporting"] [$PillType . "s"] ) . "</span>";
+      echo "</a></li>";
+    }
+    
+    echo "</ul>
+  
+          </div>
+          ";
+    
+    echo "</div></div>";
+    
+    echo "<div class='container'>";
+    
+    $WareCount = sizeof ( $_SESSION ["wareshub"] ["reporting"] [$TypeKey] );
+    
+    if ($WareCount == 0)
+    {
+      echo "<i>There is no $this->WareType available";
+    }
+    else
+    {
+      $WareTypeInfos = $_SESSION ["wareshub"] ["reporting"] [$TypeKey];
+      
+      echo "<table class='table'>";
+      echo "<tr><th>ID</th><th>OpenFLUID compatibility</th></tr>";
+      
+      foreach ( $WareTypeInfos as $WareID => $WareData )
+      {
+        echo "<tr>
+          <td><a href='" . $_SERVER ["SCRIPT_NAME"] . "?waretype=" . $this->WareType . "&wareid=" . $WareID . "'>$WareID</a>";
+        
+        if (array_key_exists ( "shortdesc", $WareData ["definition"] ) && ! empty ( $WareData ["definition"] ["shortdesc"] ))
+        {
+          echo "<div class='mainshortdesc'><span class='text-muted'>" . $WareData ["definition"] ["shortdesc"] . "</span></div>";
+        }
+        echo "  </td>
+          <td>" . $this->getCompatibilityString ( $WareData ["compat-versions"] ) . "</td>
+          </tr>";
+      }
+      
+      echo "</table>";
+    }
     
     echo "</div>";
   }
@@ -332,5 +463,6 @@ class WaresHubLayout
   }    
   
 }
+
 
 ?>
