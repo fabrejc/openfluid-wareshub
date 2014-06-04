@@ -249,7 +249,7 @@ class AdministrationTools extends ReportingTools
 
     chdir($WareInfos["git-repos-path"]);
 
-    exec("$GitCommand config hooks.mailinglist \"".implode(" ",$MailingList)."\"");
+    exec("$GitCommand config hooks.mailinglist \"".implode(",",$MailingList)."\"");
     exec("$GitCommand config hooks.emailprefix \"[".$this->ActiveDefsConfig["name"]."] $WareID - \"");
     exec("$GitCommand config hooks.showrev \"\"");
     exec("$GitCommand config hooks.announcelist \"\"");
@@ -267,8 +267,6 @@ class AdministrationTools extends ReportingTools
     $HookSource = $this->ActiveDefsPath."/".$this->WHSystemConfig["definitions"]["githooks-dir"]."/post-receive";
     $HookTarget = $WareInfos["git-repos-path"]."/hooks/post-receive";
      
-    echo "$HookSource\n";
-    echo "$HookTarget\n";
     if (file_exists($HookTarget))
       unlink($HookTarget);
   
