@@ -16,6 +16,8 @@ body {
 hr.warepage {
   margin-top: 15px;
   margin-bottom: 15px;
+  border-width: 1px 0px 0px;
+  /*border-color: #6F8CB4;*/
 }
 
 .navbar {
@@ -107,4 +109,13 @@ div.contributor {
   font-size: 100%;
   margin-top : 5px;
   margin-bottom : 5px;
+}
+
+div.branch-tab {
+  padding : 20px;
+}
+
+.label-tag {
+  background-color: #6DC3E4;
+  font-size: 90%;
 }

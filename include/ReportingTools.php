@@ -222,6 +222,19 @@ class ReportingTools extends ManagementTools
       }
     }
     
+    if (is_file($WareInfos["git-repos-path"]."/wareshub-data/".$Branch."/wareshub.json"))
+    {
+      $JSONContents = file_get_contents($WareInfos["git-repos-path"]."/wareshub-data/".$Branch."/wareshub.json");
+      $JSONContents = utf8_encode($JSONContents);
+       
+      $DecodedJSON = json_decode($JSONContents,true);
+       
+      if (json_last_error() == JSON_ERROR_NONE)
+      {
+        $Report["wareshub"] = $DecodedJSON;
+      }
+    }
+    
     return $Report;
   }	
   

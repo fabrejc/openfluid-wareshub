@@ -195,6 +195,19 @@ class WaresHubLayout
     return $TmpStr;
   }
   
+
+  // =====================================================================
+  // =====================================================================
+  
+  
+  private function getStatusString($Status)
+  {
+     if ($Status == "stable")
+       return "<span class='text-success'>$Status</span>";
+
+     return $Status;
+  }
+  
   
   // =====================================================================
   // =====================================================================
@@ -231,6 +244,11 @@ class WaresHubLayout
     $TypeKey = $this->WareType."s";
     $WareData = $_SESSION["wareshub"]["reporting"][$TypeKey][$this->WareID];
 
+    $CommitsCount = sizeof($WareData["branches"][$this->WareBranch]["commits-history"]);
+    
+    echo "&nbsp;&nbsp;<b>$CommitsCount commit(s) in this branch</b><br/>";
+    echo "<br/>";
+    
     foreach($WareData["branches"][$this->WareBranch]["commits-history"] as $CommitID => $CommitData)
     {
       echo "
@@ -262,9 +280,56 @@ class WaresHubLayout
     $TypeKey = $this->WareType."s";
     $WareData = $_SESSION["wareshub"]["reporting"][$TypeKey][$this->WareID];
 
-    echo "<br/>";
-    echo "&nbsp;&nbsp;&nbsp;&nbsp;".sizeof($WareData["branches"][$this->WareBranch]["commits-history"])." commit(s)";
-    echo "<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;<i>More informations available soon!</i>";    
+    
+    if (array_key_exists("wareshub",$WareData["branches"][$this->WareBranch]))
+    {
+      $WaresHubBranchData = $WareData["branches"][$this->WareBranch]["wareshub"];
+      
+
+      
+      if (array_key_exists("description",$WaresHubBranchData) &&
+          !empty($WaresHubBranchData["description"]))
+      {
+        echo "Detailed description: ".$WaresHubBranchData["description"]."<br/>";
+        echo "<br/>";
+      }  
+      
+      
+      if (array_key_exists("tags",$WaresHubBranchData) &&
+          is_array($WaresHubBranchData["tags"]) &&
+          !empty($WaresHubBranchData["tags"]))
+      {
+        foreach ($WaresHubBranchData["tags"] as $Tag)
+        {
+          echo "<span class='label label-tag'>#$Tag</span>&nbsp;";
+        }
+        echo "<br/><br/>";
+      }
+      
+      echo "Development status: ";
+      if (array_key_exists("status",$WaresHubBranchData) && 
+          !empty($WaresHubBranchData["status"]))
+        echo $this->getStatusString($WaresHubBranchData["status"]);
+      else
+        echo "<span class='text-muted'>not specified</span>";
+      echo "<br/>";
+
+      echo "<br/>";
+      
+      echo "License: ";
+      if (array_key_exists("license",$WaresHubBranchData) &&
+          !empty($WaresHubBranchData["license"]))
+        echo $WaresHubBranchData["license"];
+      else
+        echo "<span class='text-muted'>not specified</span>";
+      echo "<br/>";
+           
+    }
+    else
+    {
+      echo "&nbsp;&nbsp;&nbsp;&nbsp;<i>No information available</i>";
+    }
+    
   }
   
   
@@ -347,11 +412,11 @@ class WaresHubLayout
       
       echo "
       <div class='tab-content'>
-        <div class='tab-pane active' id='general'>";
+        <div class='tab-pane branch-tab active' id='general'>";
       $this->printGeneralInformations();
       echo "  
         </div>
-        <div class='tab-pane' id='commits'><br/>";
+        <div class='tab-pane branch-tab' id='commits'>";
       $this->printCommitsHistory();
       echo  "
         </div>
