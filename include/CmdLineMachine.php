@@ -41,6 +41,8 @@ class CmdLineMachine
    
   private function checkExpectedArgs($Args,$Count)
   {
+    print_r($Args);
+    
     if (sizeof($Args) < $Count)
       $this->showErrorAndExit("Missing arguments for command");
   }
@@ -339,54 +341,94 @@ class CmdLineMachine
     $RestartApache = false;
      
     $this->checkExpectedArgs($Args,3);
-     
-    $WareInfos = $this->AdminTools->getWareInfos($Args[0],$Args[1]);
-  
-    if (!is_file($WareInfos["definition-file"]))
-      $this->showErrorAndExit("Ware definition does not exist (".$Infos["definition-file"].")");
-  
-    echo "== Updating $Args[0] \"$Args[1]\"\n";
-     
-    $DefConfig = $this->AdminTools->loadAndCheckDefinition($WareInfos);
-    echo "Using definition file : ${WareInfos["definition-file"]}\n";
-     
-    try
+
+    $WareType = $Args[0];
+    $Action = $Args[2];
+    $TypeKey = $WareType."s";
+    
+    $WaresToProcess = array();
+    
+    if ($Args[1] == "...")
     {
-       
-      if ($Args[2] == "users" || $Args[2] == "allsettings")
+      $WHSystemConfig = $this->AdminTools->getWHSystemConfig();
+      
+      $DefsPath = $this->AdminTools->getActiveDefsPath()."/".
+          $WHSystemConfig["definitions"]["waresdefs-dir"]."/".
+          $WHSystemConfig["general"][$TypeKey."-dir"];
+      
+      $DirHandle  = opendir($DefsPath);
+      while (false !== ($FileName = readdir($DirHandle)))
       {
-        echo "-- Updating users\n";
-        $this->AdminTools->updateWareApacheConfig($WareInfos,$DefConfig);
-        $RestartApache = true;
-      }
-       
-      if ($Args[2] == "description" || $Args[2] == "allsettings")
-      {
-        echo "-- Updating git description\n";
-        $this->AdminTools->updateDescription($WareInfos,$DefConfig);
-      }
-       
-      if ($Args[2] == "mailinglist" || $Args[2] == "allsettings")
-      {
-        echo "-- Updating git mailinglist\n";
-        $this->AdminTools->updateMailinglist($WareInfos,$DefConfig);
-      }
-       
-      if ($Args[2] == "hooks" || $Args[2] == "allsettings")
-      {
-        echo "-- Updating git hooks\n";
-        $this->AdminTools->updateHooks($WareInfos,$DefConfig);
-      }
-  
+        $CurrentFile = $DefsPath."/".$FileName;
+      
+        $PathParts = pathinfo($CurrentFile);
+      
+        if (is_file($CurrentFile) &&
+            array_key_exists("extension",$PathParts) &&
+            $PathParts["extension"] == "json")
+        {
+          array_push($WaresToProcess,$PathParts["filename"]);
+        }
+      }      
     }
-    catch (Exception $E)
+    else
     {
-      $this->showErrorAndExit($E->getMessage());
+      array_push($WaresToProcess,$Args[1]);
     }
-  
-     
-    echo "== Completed\n\n";
-     
+    
+    foreach ($WaresToProcess as $WareID)
+    {
+
+      $WareInfos = $this->AdminTools->getWareInfos($WareType,$WareID);
+
+      if (!is_file($WareInfos["definition-file"]))
+        $this->showErrorAndExit("Ware definition does not exist (".$WareInfos["definition-file"].")");
+
+      if (is_file($WareInfos["apache-conf-file"]) && is_dir($WareInfos["git-repos-path"]))
+      {
+      
+        echo "== Updating $WareType \"$WareID\"\n";
+         
+        $DefConfig = $this->AdminTools->loadAndCheckDefinition($WareInfos);
+        echo "Using definition file : ${WareInfos["definition-file"]}\n";
+         
+        try
+        {
+           
+          if ($Action == "users" || $Action == "allsettings")
+          {
+            echo "-- Updating users\n";
+            $this->AdminTools->updateWareApacheConfig($WareInfos,$DefConfig);
+            $RestartApache = true;
+          }
+           
+          if ($Action == "description" || $Action == "allsettings")
+          {
+            echo "-- Updating git description\n";
+            $this->AdminTools->updateDescription($WareInfos,$DefConfig);
+          }
+           
+          if ($Action == "mailinglist" || $Action == "allsettings")
+          {
+            echo "-- Updating git mailinglist\n";
+            $this->AdminTools->updateMailinglist($WareInfos,$DefConfig);
+          }
+           
+          if ($Action == "hooks" || $Action == "allsettings")
+          {
+            echo "-- Updating git hooks\n";
+            $this->AdminTools->updateHooks($WareInfos,$DefConfig);
+          }
+
+        }
+        catch (Exception $E)
+        {
+          $this->showErrorAndExit($E->getMessage());
+        }
+         
+        echo "== Completed\n\n";
+      }
+    }
      
     if ($RestartApache)
     {
