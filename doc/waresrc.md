@@ -6,6 +6,19 @@ Set up informations in wares source code
 
 **TODO**
 
+```
+{
+  "name" : "ware name",
+  "description" : "ware name",
+  "contacts" : ["john@foobar.org","dave@foobar.org"],
+  "tags" : ["water","rain","files"],
+  "license" : "GPL-3.0",
+  "status" : "beta",
+  "validation" : "done",
+  "external-deps" : ["libA","libB"]  
+}
+```
+
 
 ## README or README.md : Classic README informations
 
