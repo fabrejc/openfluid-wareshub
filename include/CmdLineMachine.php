@@ -41,8 +41,6 @@ class CmdLineMachine
    
   private function checkExpectedArgs($Args,$Count)
   {
-    print_r($Args);
-    
     if (sizeof($Args) < $Count)
       $this->showErrorAndExit("Missing arguments for command");
   }
