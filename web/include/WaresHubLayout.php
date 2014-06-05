@@ -52,7 +52,7 @@ class WaresHubLayout
   // =====================================================================
   
   
-  private function getCompatibilityString($VersionsArray)
+  private function getCompatibilityString($VersionsArray,$LongString = true)
   {
     $CompatVersions = "<i>unknown</i>";
     
@@ -62,7 +62,10 @@ class WaresHubLayout
       
       if (sizeof($VersionsArray) > 1)
       {
-        $CompatVersions .= " <span class='text-muted'>and ".implode(", ",array_slice($VersionsArray,1))."</span>";
+        if ($LongString)
+          $CompatVersions .= " <span class='text-muted'>and ".implode(", ",array_slice($VersionsArray,1))."</span>";
+        else
+          $CompatVersions .= " <span class='text-muted'>and previous</span>";
       }
     } 
 
@@ -281,8 +284,13 @@ class WaresHubLayout
     echo "<h3>
             <a href='".$_SERVER["SCRIPT_NAME"]."'><span class='glyphicon glyphicon-list'></span></a>&nbsp;&nbsp;/
                 <a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."'>".$TypeKey."</a>&nbsp;/
-            ".$this->WareID."</h3><br/>";
-
+            ".$this->WareID."</h3>";
+    
+    if (array_key_exists("shortdesc",$WareData["definition"]))
+      echo "<h4>".$WareData["definition"]["shortdesc"]."</h4>";
+    
+    echo "<br/>";
+    
     echo "<div class='row'>";
     
     echo "<div class='col-md-6'>";
@@ -420,12 +428,12 @@ class WaresHubLayout
         echo "<tr>
           <td><a href='" . $_SERVER ["SCRIPT_NAME"] . "?waretype=" . $this->WareType . "&wareid=" . $WareID . "'>$WareID</a>";
         
-        if (array_key_exists ( "shortdesc", $WareData ["definition"] ) && ! empty ( $WareData ["definition"] ["shortdesc"] ))
+        if (array_key_exists("shortdesc",$WareData["definition"]) && !empty($WareData["definition"]["shortdesc"]))
         {
           echo "<div class='mainshortdesc'><span class='text-muted'>" . $WareData ["definition"] ["shortdesc"] . "</span></div>";
         }
         echo "  </td>
-          <td>" . $this->getCompatibilityString ( $WareData ["compat-versions"] ) . "</td>
+          <td>" . $this->getCompatibilityString($WareData["compat-versions"],false) . "</td>
           </tr>";
       }
       
