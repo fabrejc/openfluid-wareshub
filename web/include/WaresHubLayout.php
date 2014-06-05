@@ -88,15 +88,20 @@ class WaresHubLayout
   // =====================================================================
   
   
-  private function getBranchStarString($BranchName)
+  private function isBranchStar($BranchName)
   {
-    $StarString = "";
-    
     $Pos = strpos($BranchName,"openfluid-");
-    if ($Pos !== false && $Pos == 0 && preg_match("#(\d+\.\d+(\.\d+)*)$#", $BranchName, $MatchVersion))
-      $StarString = "&nbsp;<span class='glyphicon glyphicon-star-empty branch-star'></span>";
-    
-    return $StarString;
+    return ($Pos !== false && $Pos == 0 && preg_match("#(\d+\.\d+(\.\d+)*)$#", $BranchName, $MatchVersion));
+  }
+  
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
+  private function getBranchStarString()
+  {
+    return "&nbsp;<span class='glyphicon glyphicon-star-empty branch-star'></span>";
   }
 
 
@@ -109,19 +114,41 @@ class WaresHubLayout
     if (empty($BranchesArray))
       return "<i>none</i>";
     else
-    {      
+    {            
       $TmpStr = "<div class='btn-group'><button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>";
-      $TmpStr .= $this->WareBranch.$this->getBranchStarString($this->WareBranch)."&nbsp;&nbsp;<span class='caret'></span>";
+      $TmpStr .= $this->WareBranch;
+      
+      if ($this->isBranchStar($this->WareBranch))
+        $TmpStr .= $this->getBranchStarString();
+        
+      $TmpStr .= "&nbsp;&nbsp;<span class='caret'></span>";
       $TmpStr .= "</button>";
       $TmpStr .= "<ul class='dropdown-menu' role='menu'>";
+
+      $StarBranches = array();
+      $OtherBranches = array();
       
       foreach ($BranchesArray as $BranchName => $BranchInfos)
       {
-        $StarString = $this->getBranchStarString($BranchName);
-        
+        if ($this->isBranchStar($BranchName))
+          array_push($StarBranches,$BranchName);
+        else
+          array_push($OtherBranches,$BranchName); 
+      }
+      
+      rsort($StarBranches);
+      $StarString = $this->getBranchStarString();
+      
+      foreach ($StarBranches as $BranchName)             
         $TmpStr .= "<li><a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."&wareid=".$this->WareID."&warebranch=".$BranchName."'>$BranchName $StarString</a></li>";
   
-      }
+      if (!empty($StarBranches) && !empty($OtherBranches))
+        $TmpStr .= " <li class='divider'></li>";
+
+      foreach ($OtherBranches as $BranchName)
+        $TmpStr .= "<li><a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."&wareid=".$this->WareID."&warebranch=".$BranchName."'>$BranchName</a></li>";
+      
+      
       $TmpStr .= "</ul>";
       $TmpStr .= "</div>";
       
@@ -267,7 +294,7 @@ class WaresHubLayout
     
     if (array_key_exists("committers",$WareData))
     {    
-      echo "Contributors: ";
+      echo sizeof($WareData["committers"])." contributors: ";
       echo $this->getContributorsString($WareData["committers"]);    
     }
 
