@@ -172,8 +172,10 @@ class AdministrationTools extends ReportingTools
      
     if (in_array("*",$DefConfig[$WareID]["users-rw"]))
     {
-      $ExtraRepl["@@OFWHUB_WARE_ROUSERS_STRING@@"] = "\t# Warning: everybody is granted to read\n\t<Limit GET HEAD OPTIONS PROPFIND>\n\t\tRequire valid-user\n\t</Limit>";
-      $ExtraRepl["@@OFWHUB_WARE_RWUSERS_STRING@@"] = "\t# Warning: everybody is granted to write\n\t<LimitExcept GET HEAD OPTIONS PROPFIND>\n\t\tRequire valid-user\n\t</LimitExcept>";
+      $ExtraRepl["@@OFWHUB_WARE_ROUSERS_STRING@@"] = 
+      "\t# Warning: everybody is granted to read\n\tRequire valid-user";
+      $ExtraRepl["@@OFWHUB_WARE_RWUSERS_STRING@@"] = 
+      "\t# Warning: everybody is granted to write\n\tRequire valid-user";
     }
     else
     {
@@ -183,13 +185,14 @@ class AdministrationTools extends ReportingTools
       $this->processUsersGrants($ROUsers,$RWUsers);
        
       if (in_array("*",$ROUsers))
-        $ExtraRepl["@@OFWHUB_WARE_ROUSERS_STRING@@"] = "\t# Warning: everybody is granted to read\n\t<Limit GET HEAD OPTIONS PROPFIND>\n\t\tRequire valid-user\n\t</Limit>";
+        $ExtraRepl["@@OFWHUB_WARE_ROUSERS_STRING@@"] = 
+          "\t# Warning: everybody is granted to read\n\tRequire valid-user";
       else
         $ExtraRepl["@@OFWHUB_WARE_ROUSERS_STRING@@"] =
-        "\t# Read only authorized users\n\t<Limit GET HEAD OPTIONS PROPFIND>\n\t\tRequire user ".implode(" ",$ROUsers)."\n\t</Limit>";
+          "\t# Read only authorized users\n\tRequire user ".implode(" ",$ROUsers);
        
       $ExtraRepl["@@OFWHUB_WARE_RWUSERS_STRING@@"] =
-      "\t# Read-write authorized users\n\t<LimitExcept GET HEAD OPTIONS PROPFIND>\n\t\tRequire user ".implode(" ",$RWUsers)."\n\t</LimitExcept>";
+        "\t# Read-write authorized users\n\tRequire user ".implode(" ",$RWUsers);
     }
   }
    
