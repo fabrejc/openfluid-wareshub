@@ -157,8 +157,7 @@ class AdministrationTools extends ReportingTools
   
   public function updateDescription($WareInfos,$DefConfig)
   {
-    if (array_key_exists("description",$DefConfig[$WareInfos["ware-id"]]))
-      file_put_contents($WareInfos["git-description-file"],$DefConfig[$WareInfos["ware-id"]]["description"]);
+    file_put_contents($WareInfos["git-description-file"],$WareInfos["ware-id"]);
   }
    
    
@@ -253,7 +252,7 @@ class AdministrationTools extends ReportingTools
     chdir($WareInfos["git-repos-path"]);
 
     exec("$GitCommand config hooks.mailinglist \"".implode(",",$MailingList)."\"");
-    exec("$GitCommand config hooks.emailprefix \"[".$this->ActiveDefsConfig["name"]."] $WareID - \"");
+    exec("$GitCommand config hooks.emailprefix \"[".$this->ActiveDefsConfig["name"]."] \"");
     exec("$GitCommand config hooks.showrev \"\"");
     exec("$GitCommand config hooks.announcelist \"\"");
 
