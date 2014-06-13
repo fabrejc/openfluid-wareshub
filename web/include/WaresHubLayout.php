@@ -58,7 +58,7 @@ class WaresHubLayout
     
     if (!empty($VersionsArray))
     {
-      $CompatVersions = $VersionsArray[0]; 
+      $CompatVersions = $VersionsArray[0];
       
       if (sizeof($VersionsArray) > 1)
       {
@@ -101,12 +101,34 @@ class WaresHubLayout
   // =====================================================================
   // =====================================================================
   
+  private function isCurrentVersionBranch($BranchName)
+  {
+    if (array_key_exists("openfluid-current-version",$_SESSION["wareshub"]["definitions-config"]) &&
+        $BranchName == "openfluid-".$_SESSION["wareshub"]["definitions-config"]["openfluid-current-version"])
+      return true;
+    else
+      return false;
+  }
+  
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
+  private function getCurrentBranchStarString()
+  {
+    return "&nbsp;<span class='glyphicon glyphicon-star branch-star'></span>";
+  }
+
+  
+  // =====================================================================
+  // =====================================================================
+  
   
   private function getBranchStarString()
   {
     return "&nbsp;<span class='glyphicon glyphicon-star-empty branch-star'></span>";
   }
-
 
   // =====================================================================
   // =====================================================================
@@ -122,8 +144,12 @@ class WaresHubLayout
       $TmpStr .= $this->WareBranch;
       
       if ($this->isBranchStar($this->WareBranch))
-        $TmpStr .= $this->getBranchStarString();
-        
+      {
+        if ($this->isCurrentVersionBranch($this->WareBranch))
+          $TmpStr .= $this->getCurrentBranchStarString();
+        else
+          $TmpStr .= $this->getBranchStarString();
+      } 
       $TmpStr .= "&nbsp;&nbsp;<span class='caret'></span>";
       $TmpStr .= "</button>";
       $TmpStr .= "<ul class='dropdown-menu' role='menu'>";
@@ -141,10 +167,17 @@ class WaresHubLayout
       
       rsort($StarBranches);
       $StarString = $this->getBranchStarString();
+      $CurrentStarString = $this->getCurrentBranchStarString();
       
-      foreach ($StarBranches as $BranchName)             
-        $TmpStr .= "<li><a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."&wareid=".$this->WareID."&warebranch=".$BranchName."'>$BranchName $StarString</a></li>";
-  
+      foreach ($StarBranches as $BranchName)
+      {
+        if ($this->isCurrentVersionBranch($BranchName))             
+          $TmpStr .= "<li><a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."&wareid=".$this->WareID."&warebranch=".$BranchName."'>$BranchName $CurrentStarString</a></li>";
+        else 
+          $TmpStr .= "<li><a href='".$_SERVER["SCRIPT_NAME"]."?waretype=".$this->WareType."&wareid=".$this->WareID."&warebranch=".$BranchName."'>$BranchName $StarString</a></li>";
+      }
+      
+      
       if (!empty($StarBranches) && !empty($OtherBranches))
         $TmpStr .= " <li class='divider'></li>";
 
@@ -498,7 +531,13 @@ class WaresHubLayout
           echo "<div class='mainshortdesc'><span class='text-muted'>" . $WareData ["definition"] ["shortdesc"] . "</span></div>";
         }
         echo "  </td>
-          <td>" . $this->getCompatibilityString($WareData["compat-versions"],false) . "</td>
+          <td>" . $this->getCompatibilityString($WareData["compat-versions"],false);
+          
+        if (array_key_exists("openfluid-current-version",$_SESSION["wareshub"]["definitions-config"]) &&
+            in_array($_SESSION["wareshub"]["definitions-config"]["openfluid-current-version"],$WareData["compat-versions"]))
+          echo $this->getCurrentBranchStarString();
+        
+        echo "</td>
           </tr>";
       }
       

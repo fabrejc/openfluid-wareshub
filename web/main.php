@@ -38,6 +38,8 @@ if (!isset($_SESSION["wareshub"]))
   $_SESSION["wareshub"]["dirs"]["system-web"] = $WHSytemRootPath."/web";
   $_SESSION["wareshub"]["dirs"]["defsset-root"] = $DefsSetRootPath;  
   $_SESSION["wareshub"]["dirs"]["defsset-web"] = $DefsSetRootPath."/web";
+  $_SESSION["wareshub"]["definitions-config"] = $RTools->getActiveDefsConfig();
+  
   
   if (!isset($DefsSetTitle))
     $DefsSetTitle = "OpenFLUID-WaresHub";
