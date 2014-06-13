@@ -55,6 +55,9 @@ class ManagementTools
 
   public function getActiveDefsConfig()
   { return $this->ActiveDefsConfig; }
+    
+  public static function getWareTypes()
+  { return self::$WARETYPES; }
   
     
   // =====================================================================
