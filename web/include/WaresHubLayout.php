@@ -1,5 +1,9 @@
 <?php 
 
+
+include_once(__DIR__."/WebGitTools.php");
+
+
 class WaresHubLayout
 {
   
@@ -252,32 +256,6 @@ class WaresHubLayout
   
   // =====================================================================
   // =====================================================================
-  
-  
-  private function isHTTPs()
-  {
-    //return strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'? true : false;
-    return (array_key_exists("HTTPS",$_SERVER) && strtolower($_SERVER["HTTPS"]) == "on");    
-  }
-  
-  
-  // =====================================================================
-  // =====================================================================
-  
-  
-  private function getGitURL($URLSubDir)
-  {
-    $Protocol = "http://";
-    
-    if ($this->isHTTPs())
-      $Protocol = "https://";
-    
-    return $Protocol.$_SESSION["wareshub"]["url"]["defsset-githost"]."/".$URLSubDir;
-  }
-  
-  
-  // =====================================================================
-  // =====================================================================
 
   
   private function printCommitsHistory()
@@ -423,7 +401,7 @@ class WaresHubLayout
         <div class='panel-body'>
         
          <b>URL:</b>
-         <input class='' type='text' readonly='readonly' size='40' value='".$this->getGitURL($WareData["git-url-subdir"])."'></input><br/>
+         <input class='' type='text' readonly='readonly' size='40' value='".WebGitTools::getGitURL($_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["git-url-subdir"])."'></input><br/>
          <br>         
           <li>Read access for ".$this->getGrantedUsersString($WareData["definition"]["users-ro"])."</li>
           <li>Write access for ".$this->getGrantedUsersString($WareData["definition"]["users-rw"])."</li>
