@@ -58,7 +58,15 @@ class WaresHubLayout
     
     if (!empty($VersionsArray))
     {
-      $CompatVersions = $VersionsArray[0];
+      
+      
+      if (array_key_exists("openfluid-current-version",$_SESSION["wareshub"]["definitions-config"]) &&
+          in_array($_SESSION["wareshub"]["definitions-config"]["openfluid-current-version"],$VersionsArray))
+        $CompatVersions = $this->getCurrentBranchStarString();
+      else
+        $CompatVersions = $this->getBranchStarString();            
+      
+      $CompatVersions .= "&nbsp;".$VersionsArray[0];
       
       if (sizeof($VersionsArray) > 1)
       {
@@ -531,13 +539,7 @@ class WaresHubLayout
           echo "<div class='mainshortdesc'><span class='text-muted'>" . $WareData ["definition"] ["shortdesc"] . "</span></div>";
         }
         echo "  </td>
-          <td>" . $this->getCompatibilityString($WareData["compat-versions"],false);
-          
-        if (array_key_exists("openfluid-current-version",$_SESSION["wareshub"]["definitions-config"]) &&
-            in_array($_SESSION["wareshub"]["definitions-config"]["openfluid-current-version"],$WareData["compat-versions"]))
-          echo $this->getCurrentBranchStarString();
-        
-        echo "</td>
+          <td>" . $this->getCompatibilityString($WareData["compat-versions"],false)."</td>
           </tr>";
       }
       
