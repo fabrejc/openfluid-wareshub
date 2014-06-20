@@ -237,7 +237,16 @@ class ManagementTools
         $WareID;
     
     $Infos["git-description-file"] = $Infos["git-repos-path"]."/description";
-     
+
+    $Infos["pdfdoc-file"] = $this->ActiveDefsInstanceRootPath."/".
+        $this->WHSystemConfig["instance"]["web-resources-rootdir"]."/".
+        $WareTypeSubdir."/".
+        $WareID.".pdf";
+    
+    $Infos["pdfdoc-url-subfile"] = $this->ActiveDefsConfig["url-resources-subdir"]."/".
+        $WareTypeSubdir."/".
+        $WareID.".pdf";
+    
     return $Infos;
   }
    

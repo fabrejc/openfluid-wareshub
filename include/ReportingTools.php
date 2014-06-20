@@ -150,10 +150,19 @@ class ReportingTools extends ManagementTools
               $Report[$TypeKey][$ID]["branches"] = array();
               $Report[$TypeKey][$ID]["compat-versions"] = array();
               $Report[$TypeKey][$ID]["git-url-subdir"] = $WareInfos["git-url-subdir"];
+              $Report[$TypeKey][$ID]["pdf-doc-url"] = "";
               $Report[$TypeKey][$ID]["definition"] = $WareDefinition[$ID];
-                            
+              
               $this->processUsersGrants($Report[$TypeKey][$ID]["definition"]["users-ro"],
                                         $Report[$TypeKey][$ID]["definition"]["users-rw"]);
+              
+              
+              // pdf doc
+              if (is_file($WareInfos["pdfdoc-file"]))
+              {
+                $Report[$TypeKey][$ID]["pdfdoc-url-subfile"] = $WareInfos["pdfdoc-url-subfile"];
+              }   
+
               
               // branches
               if (is_file($WareInfos["git-repos-path"]."/wareshub-data/gitstats.json"))
@@ -232,6 +241,10 @@ class ReportingTools extends ManagementTools
       if (json_last_error() == JSON_ERROR_NONE)
       {
         $Report["wareshub"] = $DecodedJSON;
+        
+        if (!array_key_exists("contacts",$Report["wareshub"]) || 
+            empty($Report["wareshub"]["contacts"]))
+          $Report["wareshub"]["contacts"] = $this->ActiveDefsConfig["wares-contacts"];
       }
     }
     

@@ -27,6 +27,7 @@
 	},
 	"instance" : {
 		"wares-git-rootdir" : "wares-git-repositories",
+		"web-resources-rootdir" : "web-resources",
 		"apache-conf-rootdir" : "apache-configs",
 		"apache-conf-mainfile" : "main.conf"
 	}		

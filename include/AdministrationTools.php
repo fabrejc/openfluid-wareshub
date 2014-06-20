@@ -33,7 +33,12 @@ class AdministrationTools extends ReportingTools
   
     $Replacements["@@OFWHUB_WEB_ROOTPATH@@"] = $this->ActiveDefsPath."/".$this->WHSystemConfig["definitions"]["web-dir"];
     $Replacements["@@OFWHUB_WEB_URLSUBDIR@@"] = $this->ActiveDefsConfig["url-web-subdir"];
-  
+
+    $Replacements["@@OFWHUB_RESOURCES_ROOTPATH@@"] = $this->ActiveDefsInstanceRootPath."/".
+        $this->WHSystemConfig["instance"]["web-resources-rootdir"];
+    $Replacements["@@OFWHUB_RESOURCES_URLSUBDIR@@"] = $this->ActiveDefsConfig["url-resources-subdir"];
+    
+    
     $Replacements = array_replace($Replacements,$ExtraRepl);
   
     $Contents = file_get_contents($TplFile);
