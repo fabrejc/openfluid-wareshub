@@ -242,9 +242,21 @@ class ReportingTools extends ManagementTools
       {
         $Report["wareshub"] = $DecodedJSON;
         
-        if (!array_key_exists("contacts",$Report["wareshub"]) || 
-            empty($Report["wareshub"]["contacts"]))
+        if (!array_key_exists("contacts",$Report["wareshub"]))
+        {
+          // contacts does not exists and is replaced by default
           $Report["wareshub"]["contacts"] = $this->ActiveDefsConfig["wares-contacts"];
+        } 
+        else
+        {
+          // remove empty contacts
+          $Report["wareshub"]["contacts"] = array_filter($Report["wareshub"]["contacts"]);
+          if(empty($Report["wareshub"]["contacts"]))
+          {
+            // contacts is empty and is replaced by default
+            $Report["wareshub"]["contacts"] = $this->ActiveDefsConfig["wares-contacts"];
+          }            
+        } 
       }
     }
     
