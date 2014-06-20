@@ -342,7 +342,15 @@ class WaresHubLayout
       else
         echo "<span class='text-muted'>not specified</span>";
       echo "<br/>";
-           
+
+      echo "<br/>";
+      
+      echo "Contacts:<br/>";      
+      foreach ($WaresHubBranchData["contacts"] as $Email)
+      {
+        echo "&nbsp;&nbsp;<a href=mailto:$Email><span class='glyphicon glyphicon-envelope'></span>&nbsp;$Email</a>";
+      }
+      
     }
     else
     {
@@ -378,11 +386,16 @@ class WaresHubLayout
     echo "<div class='row'>";
     
     echo "<div class='col-md-6'>";
-    
-
-    
+        
+    if (!empty($WareData["pdfdoc-url-subfile"]))
+    {
+      echo "Documentation: <a href='".WebGitTools::getPDFURL($_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["pdfdoc-url-subfile"])."'>
+                <span class='glyphicon glyphicon-file'></span>&nbsp;PDF
+                </a><br/>";
+    }
     echo "OpenFLUID version(s): ".$this->getCompatibilityString($WareData["compat-versions"])."<br/>";
     echo "<br/>";
+    
     
     if (array_key_exists("committers",$WareData))
     {    
@@ -504,8 +517,8 @@ class WaresHubLayout
     {
       $WareTypeInfos = $_SESSION ["wareshub"] ["reporting"] [$TypeKey];
       
-      echo "<table class='table'>";
-      echo "<tr><th>ID</th><th>OpenFLUID compatibility</th></tr>";
+      echo "<table class='table' wdith='100%'>";
+      echo "<tr><th width='60%'>ID</th><th width='20%'>Doc</th><th>OpenFLUID compatibility</th></tr>";
       
       foreach ( $WareTypeInfos as $WareID => $WareData )
       {
@@ -516,8 +529,18 @@ class WaresHubLayout
         {
           echo "<div class='mainshortdesc'><span class='text-muted'>" . $WareData ["definition"] ["shortdesc"] . "</span></div>";
         }
-        echo "  </td>
-          <td>" . $this->getCompatibilityString($WareData["compat-versions"],false)."</td>
+        
+        echo "  </td><td>";
+        
+        if (!empty($WareData["pdfdoc-url-subfile"]))
+        {
+          echo "<a href='".WebGitTools::getPDFURL($_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["pdfdoc-url-subfile"])."'>
+                <span class='glyphicon glyphicon-file'></span>&nbsp;PDF
+                </a>";                    
+        }
+        else echo "&nbsp;";          
+        
+        echo "<td>" . $this->getCompatibilityString($WareData["compat-versions"],false)."</td>
           </tr>";
       }
       

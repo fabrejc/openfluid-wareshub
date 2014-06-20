@@ -22,7 +22,21 @@ class WebGitTools
   
     return $Protocol.$Host."/".$URLSubDir;
   }
+
   
+  // =====================================================================
+  // =====================================================================
+  
+  
+  public static function getPDFURL($Host,$SubURL)
+  {
+    $Protocol = "http://";
+  
+    if (self::isHTTPs())
+      $Protocol = "https://";
+  
+    return $Protocol.$Host."/".$SubURL;
+  }
 }
 
 ?>
