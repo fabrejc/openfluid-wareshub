@@ -7,7 +7,10 @@ class WarePageLayout extends BasePageLayout
   private $WareID;
   private $WareBranch;
   
-
+  private $Issues;
+  private $OpenIssuesStats;
+  
+  
   // =====================================================================
   // =====================================================================
   
@@ -16,6 +19,12 @@ class WarePageLayout extends BasePageLayout
   {
     $this->WareID = "";
     $this->WareBranch = "";
+    
+    $this->Issues = array();
+    $this->OpenIssuesStats = array();
+    $this->OpenIssuesStats["bug"] = 0;
+    $this->OpenIssuesStats["feature"] = 0;
+    $this->OpenIssuesStats["review"] = 0;
   }
 
 
@@ -272,7 +281,121 @@ class WarePageLayout extends BasePageLayout
 
   // =====================================================================
   // =====================================================================
+  
+  
+  private function rebuildIssues()
+  {
+    $this->Issues = array();
+    
+    $this->Issues["open"] = array();
+    $this->Issues["closed"] = array();
+    
+    $TypeKey = $this->WareType."s";
+    $WareData = $_SESSION["wareshub"]["reporting"][$TypeKey][$this->WareID];
+    
+        
+    if (array_key_exists("wareshub",$WareData["branches"][$this->WareBranch]))
+    {
+      $WaresHubBranchData = $WareData["branches"][$this->WareBranch]["wareshub"];
+    
+      $HasIssues = array_key_exists("issues",$WaresHubBranchData) &&
+                   !empty($WaresHubBranchData["issues"]);
+      
+      if ($HasIssues)
+      {
+        foreach ($WaresHubBranchData["issues"] as $IssueID => $IssueData)
+        {
+          if (array_key_exists("title",$IssueData) &&
+              array_key_exists("creator",$IssueData) &&
+              array_key_exists("date",$IssueData) &&
+              array_key_exists("type",$IssueData) &&
+              array_key_exists("state",$IssueData))
+          {
+            $NewIssue = array();
+            $NewIssue["ID"] = $IssueID;
+            $NewIssue["title"] = $IssueData["title"];
+            $NewIssue["creator"] = $IssueData["creator"];
+            $NewIssue["date"] = $IssueData["date"];
+            $NewIssue["type"] = $IssueData["type"];
+            $NewIssue["description"] = "";
+            $NewIssue["urgency"] = "not precised";
+            
+            if (array_key_exists("description",$IssueData))
+              $NewIssue["description"] = $IssueData["description"];
+            
+            if (array_key_exists("urgency",$IssueData))
+              $NewIssue["urgency"] = $IssueData["urgency"];
+                          
+            // issues with missing state or state != closed are considered as open
+            if (!array_key_exists("state",$IssueData) || 
+                $IssueData["state"] != "closed")
+            {
+              array_push($this->Issues["open"],$NewIssue);
+              $this->OpenIssuesStats[$IssueData["type"]]++;
+            }
+            else
+              array_push($this->Issues["closed"],$NewIssue);
+          }              
+        }
+      }      
+    }  
+  }
+  
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
+  private function printIssues()
+  {
+    echo "<div class='issue-stat'>";
+    echo "<b>Open issue(s):</b>";
+    echo "</div>";
+    
+    $IssuesTypes = array("bug" => "bug(s) to fix",
+                         "feature" => "new feature(s) requested",
+                         "review" => "review(s) needed");
+    
+    foreach ($IssuesTypes as $IssueType => $IssueText)
+    {
+      echo "<div class='issue-stat'>";
+      
+      if ($this->OpenIssuesStats[$IssueType] > 0)    
+        echo "<span class='glyphicon ".self::$EnlightedIssuesIcons[$IssueType]."'></span>";
+      else
+        echo "<span class='glyphicon ".self::$MutedIssuesIcons[$IssueType]."'></span>";
+      
+      echo "&nbsp;{$this->OpenIssuesStats[$IssueType]} $IssueText";
+      echo "</div>";
+    }  
+    
+    
+    echo "</br>";
+    echo "</br>";
+    
+    if (!empty($this->Issues["open"]))
+    {
+      foreach ($this->Issues["open"] as $Issue)
+      {
+        echo "
+          <div class='panel panel-default panel-issue'>
+            <div class='panel-heading issue-heading'>
+              <span class='glyphicon ".self::$EnlightedIssuesIcons[$Issue["type"]]."'></span><b>&nbsp;{$Issue["title"]}</b><br>
+              <span class='text-muted'>Created by {$Issue["creator"]} on {$Issue["date"]}, urgency is {$Issue["urgency"]}</span>              
+            </div>
+            <div class='panel-body'>".nl2br($Issue["description"])."</div>
+          </div>      
+          ";        
+      } 
+      
+    }
+    
+  }
 
+  
+  // =====================================================================
+  // =====================================================================  
+  
 
   public function getPageContent()
   {
@@ -316,25 +439,19 @@ class WarePageLayout extends BasePageLayout
 
     echo "</div>";
 
-    echo "<div class='col-md-6'>";
-
-    echo "
-        <div class='panel panel-success'>
-        <div class='panel-heading'>git access</div>
-        <div class='panel-body'>
-
-        <b>URL:</b>
-        <input class='' type='text' readonly='readonly' size='40' value='".WebGitTools::getGitURL($_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["git-url-subdir"])."'></input><br/>
-            <br>
-            <li>Read access for ".$this->getGrantedUsersString($WareData["definition"]["users-ro"])."</li>
-                <li>Write access for ".$this->getGrantedUsersString($WareData["definition"]["users-rw"])."</li>
-                    </div>
-                    </div>
-                    ";
-
-    echo "</div>";
-
-    echo "</div>";
+    echo "<div class='col-md-6'>
+          <div class='panel panel-success'>
+          <div class='panel-heading'>git access</div>
+            <div class='panel-body'>
+              <b>URL:</b>
+              <input class='' type='text' readonly='readonly' size='40' value='".WebGitTools::getGitURL($_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["git-url-subdir"])."'></input><br/>
+              <br>
+              <li>Read access for ".$this->getGrantedUsersString($WareData["definition"]["users-ro"])."</li>
+              <li>Write access for ".$this->getGrantedUsersString($WareData["definition"]["users-rw"])."</li>
+            </div>
+          </div>
+          </div>
+          </div>";
 
     echo "<hr class='warepage'>";
 
@@ -346,10 +463,15 @@ class WarePageLayout extends BasePageLayout
     {
       echo "<h4>Branch: ".$this->getBranchesDropdown($WareData["branches"])."</h4><br/>";
 
+      $this->rebuildIssues();
+      
       echo "
           <ul class='nav nav-tabs'>
           <li class='active'><a href='#general' data-toggle='tab'>General information</a></li>
-          <li><a href='#commits' data-toggle='tab'>Commits history</a></li>
+          <li><a href='#commits' data-toggle='tab'>Commits history</a></li>          
+          <li><a href='#issues' data-toggle='tab'>Issues</a></li>";
+      
+      echo "
           </ul>";
 
       echo "
@@ -362,10 +484,12 @@ class WarePageLayout extends BasePageLayout
       $this->printCommitsHistory();
       echo  "
           </div>
+          <div class='tab-pane branch-tab' id='issues'>";
+      $this->printIssues();
+      echo "</div>
           </div>
           ";
     }
-
 
     echo "</div>";
   }

@@ -12,6 +12,20 @@ abstract class BasePageLayout
   protected static $WARETYPES = array("simulator","observer","builderext");
 
   
+  protected static $MutedIssuesIcons = array(
+      "bug" => "glyphicon-exclamation-sign text-muted",
+      "feature"  => "glyphicon-circle-arrow-up text-muted",
+      "review" => "glyphicon-eye-open text-muted"
+  );
+  
+  
+  protected static $EnlightedIssuesIcons = array(
+      "bug" => "glyphicon-exclamation-sign issue-color-bug",
+      "feature"  => "glyphicon-circle-arrow-up issue-color-feature",
+      "review" => "glyphicon-eye-open issue-color-review"
+  );
+  
+  
   // =====================================================================
   // =====================================================================
     
@@ -161,9 +175,7 @@ abstract class BasePageLayout
         </nav>
      ";
     
-
-    $this->getPageContent();
-    
+    $this->getPageContent();    
     
     echo "</div>";
     echo "</body>";    

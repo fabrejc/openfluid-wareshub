@@ -6,11 +6,15 @@ include_once(__DIR__."/BasePageLayout.php");
 class MainPageLayout extends BasePageLayout
 {
 
-
+  
   function __construct()
   {
   }
 
+  
+  // =====================================================================
+  // =====================================================================
+  
 
   public function getPageContent()
   {
@@ -76,7 +80,26 @@ class MainPageLayout extends BasePageLayout
         {
           echo "<div class='mainshortdesc'><span class='text-muted'>" . $WareData ["definition"] ["shortdesc"] . "</span></div>";
         }
-
+        
+        if (array_key_exists("open-issues",$WareData))
+        {
+          echo "<div class='mainopenissues'>";
+          
+          $IssuesTypes = array("bug","feature","review");
+          
+          foreach ($IssuesTypes as $IssueType)
+          {
+            if ($WareData["open-issues"][$IssueType] > 0)
+              echo "<span class='glyphicon ".self::$EnlightedIssuesIcons[$IssueType]."'></span>";
+            else
+              echo "<span class='glyphicon ".self::$MutedIssuesIcons[$IssueType]."'></span>";             
+              
+            echo "<span class='text-muted'>&nbsp;".$WareData["open-issues"][$IssueType]."</span>&nbsp&nbsp&nbsp&nbsp";
+          }
+          
+          echo "</div>";
+        }
+        
         echo "  </td><td>";
 
         if (!empty($WareData["pdfdoc-url-subfile"]))

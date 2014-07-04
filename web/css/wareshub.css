@@ -79,6 +79,11 @@ div.mainshortdesc {
   font-size: 75%;
 }
 
+div.mainopenissues {
+  margin-left: 30px;
+  font-size: 80%;
+}
+
 .panel-commit>.panel-heading {
   padding: 5px 10px;
 }
@@ -118,4 +123,27 @@ div.branch-tab {
 .label-tag {
   background-color: #6DC3E4;
   font-size: 90%;
+}
+
+div.issue-stat {
+  margin-left : 5px;
+  margin-right : 45px;
+  display : inline-block;
+  font-size: 115%;
+}
+
+.issue-stat>.glyphicon {
+  font-size : 125%;
+}
+
+.issue-color-bug {
+  color : #E6603A;
+}
+
+.issue-color-feature {
+  color : #8AD242;
+}
+
+.issue-color-review {
+  color : #42D0D2;
 }
