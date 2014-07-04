@@ -3,6 +3,7 @@
 import os
 import subprocess
 import re
+import json
 
 
 ###################################################
@@ -67,6 +68,20 @@ def extractBranchFile(BranchName,FileName):
 
 ###################################################
 
+def findHigherBranch(BranchesList):
+
+  ValidBranches = []
+  
+  for Branch in BranchesList:
+    ValidFound = re.match("openfluid-(\d+\.\d+(\.\d+)*)$",Branch)
+    if ValidFound:
+      ValidBranches.append(Branch)
+  
+  return max(ValidBranches)
+
+
+###################################################
+
 
 def generateGitStatsFile(BranchesList):
     
@@ -118,22 +133,50 @@ def generateGitStatsFile(BranchesList):
       
       FirstLine = False
      
-  GitStatsFile.write("\n  }\n}\n")  
+  GitStatsFile.write("\n  },\n")
+  
+  
+  # open-issues stats
+  
+  OpenIssues = dict()
+  OpenIssues["bug"] = 0;
+  OpenIssues["feature"] = 0;
+  OpenIssues["review"] = 0;
+  
+  DefaultBranch = findHigherBranch(BranchesList)
+  WHFilePath = "wareshub-data/"+DefaultBranch+"/wareshub.json"
+  
+  if (os.path.isfile(WHFilePath)):
+    try:   
+      WHFileContent=open(WHFilePath)
+      WHFileJSON = json.load(WHFileContent)
+      
+      if "issues" in WHFileJSON.keys():
+        for IssueID, IssueInfos in WHFileJSON["issues"].iteritems():
+          IssueInfosList = IssueInfos.keys()
+          if "state" not in IssueInfosList or IssueInfos["state"] != "closed":
+            if "type" in IssueInfosList:
+              OpenIssues[IssueInfos["type"]] += 1
+                    
+    except ValueError:
+      pass  
+  
+  GitStatsFile.write("  \"open-issues\" : {\n")
+  GitStatsFile.write("    \"bug\" : \"%s\",\n" % OpenIssues["bug"])
+  GitStatsFile.write("    \"feature\" :\"%s\",\n" % OpenIssues["feature"])
+  GitStatsFile.write("    \"review\" : \"%s\"\n" % OpenIssues["review"])
+  GitStatsFile.write("  }\n")
 
+  
+  GitStatsFile.write("}\n")
+      
 
 ###################################################
 
 
 def setDefaultBranch(BranchesList):
-  
-  ValidBranches = []
-  
-  for Branch in BranchesList:
-    ValidFound = re.match("openfluid-(\d+\.\d+(\.\d+)*)$",Branch)
-    if ValidFound:
-      ValidBranches.append(Branch)
-  
-  DefaultBranch = max(ValidBranches)
+    
+  DefaultBranch = findHigherBranch(BranchesList)
 
   subprocess.call(["git","symbolic-ref","-q","HEAD","refs/heads/"+DefaultBranch])
 

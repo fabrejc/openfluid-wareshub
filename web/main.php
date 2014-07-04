@@ -62,59 +62,74 @@ if (!isset($_SESSION["wareshub"]))
 #######
 
 
-include_once(__DIR__."/include/WaresHubLayout.php");
 
-$Layout = new WaresHubLayout();
+$Page = NULL;
+
+$CurrentWareType="simulator";
+
 
 if (isset($_REQUEST["waretype"]))
 {
-  $Layout->setWareType($_REQUEST["waretype"]);
+  $CurrentWareType=$_REQUEST["waretype"];
+}  
+
+
+if (isset($_REQUEST["wareid"]))
+{
+  include_once(__DIR__."/include/WarePageLayout.php");
   
-  if (isset($_REQUEST["wareid"]))
+  $Page = new WarePageLayout();
+  
+  $Page->setWareType($CurrentWareType);
+  $Page->setWareID($_REQUEST["wareid"]);
+  $CurrentBranch = "";
+
+
+  if (isset($_REQUEST["warebranch"]))
   {
-    $Layout->setWareID($_REQUEST["wareid"]);
-    $CurrentBranch = "";
-    
-    if (isset($_REQUEST["warebranch"]))
-    {
-      $CurrentBranch = $_REQUEST["warebranch"];
-    }
-    else
-    {
-      $WareData = $_SESSION["wareshub"]["reporting"][$_REQUEST["waretype"]."s"][$_REQUEST["wareid"]];
-      
-      
-      
-      if (!empty($WareData["compat-versions"]))
-      {
-        // take the higher compat version as default branch
-        $CurrentBranch = "openfluid-".$WareData["compat-versions"][0];
-        $Layout->setWareBranch($CurrentBranch);
-      }
-      else if (!empty($WareData["branches"]))
-      {
-        // take the first branch
-        reset($WareData["branches"]);
-        $CurrentBranch = key($WareData["branches"]);
-      }
-    }
-
-    if (! empty ( $CurrentBranch ))
-    {
-      if (empty ( $WareData ["branches"] [$CurrentBranch] ))
-      {
-        $_SESSION ["wareshub"] ["reporting"] [$_REQUEST ["waretype"] . "s"] [$_REQUEST ["wareid"]] ["branches"] [$CurrentBranch] = $RTools->getWebReportForBranch ( $_REQUEST ["waretype"], $_REQUEST ["wareid"], $CurrentBranch );
-      }
-      
-      $Layout->setWareBranch ( $CurrentBranch );
-    }
-    
+    $CurrentBranch = $_REQUEST["warebranch"];
   }
-  
+  else
+  {
+    $WareData = $_SESSION["wareshub"]["reporting"][$_REQUEST["waretype"]."s"][$_REQUEST["wareid"]];
+
+
+
+    if (!empty($WareData["compat-versions"]))
+    {
+      // take the higher compat version as default branch
+      $CurrentBranch = "openfluid-".$WareData["compat-versions"][0];
+      $Page->setWareBranch($CurrentBranch);
+    }
+    else if (!empty($WareData["branches"]))
+    {
+      // take the first branch
+      reset($WareData["branches"]);
+      $CurrentBranch = key($WareData["branches"]);
+    }
+  }
+
+  if (! empty ( $CurrentBranch ))
+  {
+    if (empty ( $WareData ["branches"] [$CurrentBranch] ))
+    {
+      $_SESSION ["wareshub"] ["reporting"] [$_REQUEST ["waretype"] . "s"] [$_REQUEST ["wareid"]] ["branches"] [$CurrentBranch] = $RTools->getWebReportForBranch ( $_REQUEST ["waretype"], $_REQUEST ["wareid"], $CurrentBranch );
+    }
+
+    $Page->setWareBranch ( $CurrentBranch );
+  }
 }
+else
+{
+  include_once(__DIR__."/include/MainPageLayout.php");
+  
+  $Page = new MainPageLayout();
+  $Page->setWareType($CurrentWareType);
+}
+  
 
+$Page->generatePage();
 
-$Layout->generatePage();
 
 
 ?>

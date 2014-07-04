@@ -192,7 +192,17 @@ class ReportingTools extends ManagementTools
                   }
                   
                   if (array_key_exists("committers",$DecodedJSON))
-                    $Report[$TypeKey][$ID]["committers"] = $DecodedJSON["committers"];                  
+                    $Report[$TypeKey][$ID]["committers"] = $DecodedJSON["committers"];
+
+                  if (array_key_exists("open-issues",$DecodedJSON))
+                    $Report[$TypeKey][$ID]["open-issues"] = $DecodedJSON["open-issues"];
+                  else
+                  {
+                    $Report[$TypeKey][$ID]["open-issues"] = array();
+                    $Report[$TypeKey][$ID]["open-issues"]["bug"] = 0;
+                    $Report[$TypeKey][$ID]["open-issues"]["feature"] = 0;
+                    $Report[$TypeKey][$ID]["open-issues"]["review"] = 0;
+                  }
                   
                 }
               }
