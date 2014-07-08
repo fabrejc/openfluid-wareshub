@@ -15,11 +15,16 @@ class WebGitTools
   
   public static function getGitURL($Host,$URLSubDir)
   {
-    $Protocol = "http://";
-  
-    if (self::isHTTPs())
-      $Protocol = "https://";
-  
+    if (array_key_exists("defsset-gitprotocol",$_SESSION["wareshub"]["url"]))
+      $Protocol = $_SESSION["wareshub"]["url"]["defsset-gitprotocol"];
+    else 
+    {
+      $Protocol = "http://";
+
+      if (self::isHTTPs())
+        $Protocol = "https://";
+    }
+    
     return $Protocol.$Host."/".$URLSubDir;
   }
 
