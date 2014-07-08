@@ -67,6 +67,9 @@ if (!isset($_SESSION["wareshub"]))
     $DefsSetGitHostname = $_SERVER["SERVER_ADDR"];
     
   $_SESSION["wareshub"]["url"]["defsset-githost"] = $DefsSetGitHostname; 
+  
+  if (isset($DefsSetGitProtocol))
+    $_SESSION["wareshub"]["url"]["defsset-gitprotocol"] = $DefsSetGitProtocol;
 }  
 
 
