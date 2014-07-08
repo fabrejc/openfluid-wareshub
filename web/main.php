@@ -4,10 +4,16 @@
 session_start();
 
 
+$CurrentWareType="simulator";
+if (isset($_REQUEST["waretype"]))
+{
+  $CurrentWareType=$_REQUEST["waretype"];
+}
+
 if (isset($_REQUEST["reset"]))
 {
   session_destroy();
-  header("Location: ".$_SERVER["SCRIPT_NAME"]);
+  header("Location: ".$_SERVER["SCRIPT_NAME"]."?waretype=".$CurrentWareType);
 }
 
 
@@ -51,6 +57,11 @@ if (!isset($_SESSION["wareshub"]))
   
   $_SESSION["wareshub"]["labels"]["defsset-intro"] = $DefsSetIntro;
   
+  if (!isset($DefsSetFooter))
+    $DefsSetFooter = $DefsSetTitle;
+  
+  $_SESSION["wareshub"]["labels"]["defsset-footer"] = $DefsSetFooter;
+  
   
   if (!isset($DefsSetGitHostname))
     $DefsSetGitHostname = $_SERVER["SERVER_ADDR"];
@@ -64,14 +75,6 @@ if (!isset($_SESSION["wareshub"]))
 
 
 $Page = NULL;
-
-$CurrentWareType="simulator";
-
-
-if (isset($_REQUEST["waretype"]))
-{
-  $CurrentWareType=$_REQUEST["waretype"];
-}  
 
 
 if (isset($_REQUEST["wareid"]))
@@ -125,6 +128,11 @@ else
   
   $Page = new MainPageLayout();
   $Page->setWareType($CurrentWareType);
+  
+  if (isset($_REQUEST["search"]))
+    $Page->setSearch($_REQUEST["search"]);
+  
+  
 }
   
 

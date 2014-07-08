@@ -5,12 +5,25 @@ include_once(__DIR__."/BasePageLayout.php");
 
 class MainPageLayout extends BasePageLayout
 {
-
+  
+  private $Search;
+  
   
   function __construct()
   {
+    $this->Search = "";
   }
 
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
+  public function setSearch($Str)
+  {
+    $this->Search = $Str;
+  } 
+  
   
   // =====================================================================
   // =====================================================================
@@ -27,9 +40,9 @@ class MainPageLayout extends BasePageLayout
         <div class='container'>
         ";
 
-    echo $_SESSION ["wareshub"] ["labels"] ["defsset-intro"];
+    echo $_SESSION["wareshub"]["labels"]["defsset-intro"];
     echo "<br/>";
-    echo "&nbsp;&nbsp;<a href='" . $_SERVER ["SCRIPT_NAME"] . "?reset=1'><span class='glyphicon glyphicon-refresh'></span>&nbsp;Reload informations</a>";
+    echo "&nbsp;&nbsp;<a href='".$_SERVER ["SCRIPT_NAME"]."?reset=1&waretype=".$this->WareType."'><span class='glyphicon glyphicon-refresh'></span>&nbsp;Reload informations</a>";
 
     echo "
         <br/><br/>
@@ -44,7 +57,7 @@ class MainPageLayout extends BasePageLayout
         echo " class='active'";
       echo ">";
       echo "<a href='" . $_SERVER ["SCRIPT_NAME"] . "?waretype=${PillType}'>";
-      echo ucfirst ( "${PillType}s" );
+      echo ucfirst(static::$PluralWareTypes[$PillType]);
       echo "  <span class='badge'>" . sizeof ( $_SESSION ["wareshub"] ["reporting"] [$PillType . "s"] ) . "</span>";
       echo "</a></li>";
     }
@@ -56,16 +69,42 @@ class MainPageLayout extends BasePageLayout
 
     echo "</div></div>";
 
-    echo "<div class='container'>";
-
+    
     $WareCount = sizeof ( $_SESSION ["wareshub"] ["reporting"] [$TypeKey] );
+    
+    
+    
+    if ($WareCount > 0)
+    {
+      echo "<div class='container'>";
+
+      $SearchedValue="";
+      if (!empty($this->Search))
+        $SearchedValue="value='".$this->Search."'";
+      
+      echo "
+        <form class='form-inline pull-right search-bar' role='form'>
+        <div class='form-group'>
+          <input type='text' class='form-control input-sm' id='search' name='search' $SearchedValue placeholder='Searched terms'>
+          <button type='submit' class='btn btn-default btn-sm'>Search</button>
+          <input type='hidden' name='waretype' value='".$this->WareType."'>  
+        </div>
+        </form>
+      ";     
+      
+      echo "</div>";
+    }
+
+    
+    echo "<div class='container'>";
 
     if ($WareCount == 0)
     {
-      echo "<i>There is no $this->WareType available";
+      echo "<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>There is no ".static::$SingularWareTypes[$this->WareType]." available";
     }
     else
     {
+      $IsNotFoundMessage = true;
       $WareTypeInfos = $_SESSION ["wareshub"] ["reporting"] [$TypeKey];
 
       echo "<table class='table' wdith='100%'>";
@@ -73,48 +112,72 @@ class MainPageLayout extends BasePageLayout
 
       foreach ( $WareTypeInfos as $WareID => $WareData )
       {
-        echo "<tr>
-            <td><a href='" . $_SERVER ["SCRIPT_NAME"] . "?waretype=" . $this->WareType . "&wareid=" . $WareID . "'>$WareID</a>";
-
-        if (array_key_exists("shortdesc",$WareData["definition"]) && !empty($WareData["definition"]["shortdesc"]))
+        $OKToDisplay = true;
+        if (!empty($this->Search))
         {
-          echo "<div class='mainshortdesc'><span class='text-muted'>" . $WareData ["definition"] ["shortdesc"] . "</span></div>";
+          $OKToDisplay = false;
+          
+          if (strpos($WareID,$this->Search) !== false)
+            $OKToDisplay = true;
+          elseif (array_key_exists("shortdesc",$WareData["definition"]) && 
+                  !empty($WareData["definition"]["shortdesc"]) &&
+                   strpos($WareData["definition"]["shortdesc"],$this->Search) !== false)
+              $OKToDisplay = true;
         }
         
-        if (array_key_exists("open-issues",$WareData))
+        
+        if ($OKToDisplay)
         {
-          echo "<div class='mainopenissues'>";
+          $IsNotFoundMessage = false;
           
-          $IssuesTypes = array("bug","feature","review");
-          
-          foreach ($IssuesTypes as $IssueType)
+          echo "<tr>
+              <td><a href='" . $_SERVER ["SCRIPT_NAME"] . "?waretype=" . $this->WareType . "&wareid=" . $WareID . "'>$WareID</a>";
+  
+          if (array_key_exists("shortdesc",$WareData["definition"]) && !empty($WareData["definition"]["shortdesc"]))
           {
-            if ($WareData["open-issues"][$IssueType] > 0)
-              echo "<span class='glyphicon ".self::$EnlightedIssuesIcons[$IssueType]."'></span>";
-            else
-              echo "<span class='glyphicon ".self::$MutedIssuesIcons[$IssueType]."'></span>";             
-              
-            echo "<span class='text-muted'>&nbsp;".$WareData["open-issues"][$IssueType]."</span>&nbsp&nbsp&nbsp&nbsp";
+            echo "<div class='mainshortdesc'><span class='text-muted'>" . $WareData ["definition"] ["shortdesc"] . "</span></div>";
           }
           
-          echo "</div>";
+          if (array_key_exists("open-issues",$WareData))
+          {
+            echo "<div class='mainopenissues'>";
+            
+            $IssuesTypes = array("bug","feature","review");
+            
+            foreach ($IssuesTypes as $IssueType)
+            {
+              if ($WareData["open-issues"][$IssueType] > 0)
+                echo "<span class='glyphicon ".self::$EnlightedIssuesIcons[$IssueType]."'></span>";
+              else
+                echo "<span class='glyphicon ".self::$MutedIssuesIcons[$IssueType]."'></span>";             
+                
+              echo "<span class='text-muted'>&nbsp;".$WareData["open-issues"][$IssueType]."</span>&nbsp&nbsp&nbsp&nbsp";
+            }
+            
+            echo "</div>";
+          }
+          
+          echo "  </td><td>";
+  
+          if (!empty($WareData["pdfdoc-url-subfile"]))
+          {
+            echo "<a href='".WebGitTools::getPDFURL($_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["pdfdoc-url-subfile"])."'>
+                <span class='glyphicon glyphicon-file'></span>&nbsp;PDF
+                </a>";
+          }
+          else echo "&nbsp;";
+  
+          echo "<td>" . $this->getCompatibilityString($WareData["compat-versions"],false)."</td>
+              </tr>";
         }
         
-        echo "  </td><td>";
-
-        if (!empty($WareData["pdfdoc-url-subfile"]))
-        {
-          echo "<a href='".WebGitTools::getPDFURL($_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["pdfdoc-url-subfile"])."'>
-              <span class='glyphicon glyphicon-file'></span>&nbsp;PDF
-              </a>";
-        }
-        else echo "&nbsp;";
-
-        echo "<td>" . $this->getCompatibilityString($WareData["compat-versions"],false)."</td>
-            </tr>";
       }
 
       echo "</table>";
+      
+      if ($IsNotFoundMessage && !empty($this->Search))
+        echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>No ".static::$SingularWareTypes[$this->WareType]." found with terms \"".$this->Search."\".";
+      
     }
 
     echo "</div>";

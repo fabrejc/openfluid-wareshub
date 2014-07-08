@@ -457,7 +457,7 @@ class WarePageLayout extends BasePageLayout
 
     if (empty($this->WareBranch))
     {
-      echo "<h5><i>This ".$this->WareType." seems to be empty<i></h5>";
+      echo "<h5><i>This ".static::$SingularWareTypes[$this->WareType]." seems to be empty</i></h5>";
     }
     else
     {
