@@ -147,3 +147,7 @@ div.issue-stat {
 .issue-color-review {
   color : #42D0D2;
 }
+
+.search-bar {
+  height : 35px;
+}

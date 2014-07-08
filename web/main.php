@@ -125,6 +125,11 @@ else
   
   $Page = new MainPageLayout();
   $Page->setWareType($CurrentWareType);
+  
+  if (isset($_REQUEST["search"]))
+    $Page->setSearch($_REQUEST["search"]);
+  
+  
 }
   
 
