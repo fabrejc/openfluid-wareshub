@@ -11,6 +11,17 @@ abstract class BasePageLayout
     
   protected static $WARETYPES = array("simulator","observer","builderext");
 
+  protected static $SingularWareTypes = array(
+      "simulator" => "simulator",
+      "observer" => "observer",
+      "builderext" => "builder-extension"
+  );
+  
+  protected static $PluralWareTypes = array(
+      "simulator" => "simulators",
+      "observer" => "observers",
+      "builderext" => "builder-extensions"
+  );
   
   protected static $MutedIssuesIcons = array(
       "bug" => "glyphicon-exclamation-sign text-muted",
@@ -177,8 +188,19 @@ abstract class BasePageLayout
     
     $this->getPageContent();    
     
-    echo "</div>";
-    echo "</body>";    
+    echo "  <div id='push'></div>
+          </div>";
+    echo "
+
+         <div id='footer'>
+           <div class='container'>
+             <p class='text-center'><br>".$_SESSION["wareshub"]["labels"]["defsset-footer"]."</p>
+           </div>
+         </div>
+       </body>
+     </html>
+   ";
+    
   }    
   
 }

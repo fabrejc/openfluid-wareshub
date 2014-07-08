@@ -40,9 +40,9 @@ class MainPageLayout extends BasePageLayout
         <div class='container'>
         ";
 
-    echo $_SESSION ["wareshub"] ["labels"] ["defsset-intro"];
+    echo $_SESSION["wareshub"]["labels"]["defsset-intro"];
     echo "<br/>";
-    echo "&nbsp;&nbsp;<a href='" . $_SERVER ["SCRIPT_NAME"] . "?reset=1'><span class='glyphicon glyphicon-refresh'></span>&nbsp;Reload informations</a>";
+    echo "&nbsp;&nbsp;<a href='".$_SERVER ["SCRIPT_NAME"]."?reset=1&waretype=".$this->WareType."'><span class='glyphicon glyphicon-refresh'></span>&nbsp;Reload informations</a>";
 
     echo "
         <br/><br/>
@@ -57,7 +57,7 @@ class MainPageLayout extends BasePageLayout
         echo " class='active'";
       echo ">";
       echo "<a href='" . $_SERVER ["SCRIPT_NAME"] . "?waretype=${PillType}'>";
-      echo ucfirst ( "${PillType}s" );
+      echo ucfirst(static::$PluralWareTypes[$PillType]);
       echo "  <span class='badge'>" . sizeof ( $_SESSION ["wareshub"] ["reporting"] [$PillType . "s"] ) . "</span>";
       echo "</a></li>";
     }
@@ -100,7 +100,7 @@ class MainPageLayout extends BasePageLayout
 
     if ($WareCount == 0)
     {
-      echo "<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>There is no $this->WareType available";
+      echo "<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>There is no ".static::$SingularWareTypes[$this->WareType]." available";
     }
     else
     {
@@ -176,7 +176,7 @@ class MainPageLayout extends BasePageLayout
       echo "</table>";
       
       if ($IsNotFoundMessage && !empty($this->Search))
-        echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>No $this->WareType found with terms \"".$this->Search."\".";
+        echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>No ".static::$SingularWareTypes[$this->WareType]." found with terms \"".$this->Search."\".";
       
     }
 

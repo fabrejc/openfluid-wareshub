@@ -9,6 +9,26 @@ body {
   color: #555;
 }
 
+
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by it's height */
+  margin: 0 auto -60px;
+}
+
+/* Set the fixed height of the footer here */
+#push, #footer {
+  height: 60px;
+}
+
+#footer {
+  background-color: #f7f7f7;
+  color : #555;  
+  border-top: 1px solid #ddd;
+}
+
 .container {
   width: 970px;
 }
