@@ -67,6 +67,16 @@ hr.warepage {
   border-bottom: 1px solid #CCCCCC;
 }
 
+div.intro-text {
+  font-size: 110%;  
+}
+
+ul.centered-pills { 
+  display : inline-block;
+  margin-top : 30px;
+  margin-bottom : 20px;
+}
+
 .nav-pills>li {
   border: 1px solid #8CB04B;
   border-radius: 4px;
