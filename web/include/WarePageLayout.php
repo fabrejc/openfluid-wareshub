@@ -422,7 +422,7 @@ class WarePageLayout extends BasePageLayout
 
     if (!empty($WareData["pdfdoc-url-subfile"]))
     {
-      echo "Documentation: <a href='".WebGitTools::getPDFURL($_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["pdfdoc-url-subfile"])."'>
+      echo "Documentation: <a href='".WebGitTools::getPDFURL($_SESSION["wareshub"]["url"]["defsset-gitprotocol"],$_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["pdfdoc-url-subfile"])."'>
           <span class='glyphicon glyphicon-file'></span>&nbsp;PDF
           </a><br/>";
     }
@@ -444,7 +444,7 @@ class WarePageLayout extends BasePageLayout
           <div class='panel-heading'>git access</div>
             <div class='panel-body'>
               <b>URL:</b>
-              <input class='' type='text' readonly='readonly' size='40' value='".WebGitTools::getGitURL($_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["git-url-subdir"])."'></input><br/>
+              <input class='' type='text' readonly='readonly' size='40' value='".WebGitTools::getGitURL($_SESSION["wareshub"]["url"]["defsset-gitprotocol"],$_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["git-url-subdir"])."'></input><br/>
               <br>
               <li>Read access for ".$this->getGrantedUsersString($WareData["definition"]["users-ro"])."</li>
               <li>Write access for ".$this->getGrantedUsersString($WareData["definition"]["users-rw"])."</li>

@@ -13,33 +13,32 @@ class WebGitTools
   // =====================================================================
   
   
-  public static function getGitURL($Host,$URLSubDir)
-  {
-    if (array_key_exists("defsset-gitprotocol",$_SESSION["wareshub"]["url"]))
-      $Protocol = $_SESSION["wareshub"]["url"]["defsset-gitprotocol"];
-    else 
-    {
-      $Protocol = "http://";
-
-      if (self::isHTTPs())
-        $Protocol = "https://";
-    }
-    
-    return $Protocol.$Host."/".$URLSubDir;
-  }
-
-  
-  // =====================================================================
-  // =====================================================================
-  
-  
-  public static function getPDFURL($Host,$SubURL)
+  public static function guessProtocol()
   {
     $Protocol = "http://";
-  
-    if (self::isHTTPs())
+    if (array_key_exists("HTTPS",$_SERVER) && strtolower($_SERVER["HTTPS"]) == "on")
       $Protocol = "https://";
+    
+    return $Protocol;    
+  }
+     
   
+  // =====================================================================
+  // =====================================================================
+  
+  
+  public static function getGitURL($Protocol,$Host,$URLSubDir)
+  {
+    return $Protocol.$Host."/".$URLSubDir;
+  }
+  
+    
+  // =====================================================================
+  // =====================================================================
+  
+  
+  public static function getPDFURL($Protocol,$Host,$SubURL)
+  {
     return $Protocol.$Host."/".$SubURL;
   }
 }
