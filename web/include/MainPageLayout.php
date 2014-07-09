@@ -161,7 +161,7 @@ class MainPageLayout extends BasePageLayout
   
           if (!empty($WareData["pdfdoc-url-subfile"]))
           {
-            echo "<a href='".WebGitTools::getPDFURL($_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["pdfdoc-url-subfile"])."'>
+            echo "<a href='".WebGitTools::getPDFURL($_SESSION["wareshub"]["url"]["defsset-gitprotocol"],$_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["pdfdoc-url-subfile"])."'>
                 <span class='glyphicon glyphicon-file'></span>&nbsp;PDF
                 </a>";
           }

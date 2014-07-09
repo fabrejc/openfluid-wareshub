@@ -24,6 +24,7 @@ $WHSytemRootPath = realpath(__DIR__."/..");
 $DefsSetRootPath = realpath(dirname($_SERVER["SCRIPT_FILENAME"])."/..");
 
 include_once($WHSytemRootPath."/include/ReportingTools.php");
+include_once(__DIR__."/include/WebGitTools.php");
 
 $RTools = new ReportingTools($WHSytemRootPath."/config");
 $RTools->setActiveDefinitionsSet($DefsSetRootPath);
@@ -68,8 +69,10 @@ if (!isset($_SESSION["wareshub"]))
     
   $_SESSION["wareshub"]["url"]["defsset-githost"] = $DefsSetGitHostname; 
   
-  if (isset($DefsSetGitProtocol))
-    $_SESSION["wareshub"]["url"]["defsset-gitprotocol"] = $DefsSetGitProtocol;
+  if (!isset($DefsSetGitProtocol))
+    $DefsSetGitProtocol = WebGitTools::guessProtocol();
+    
+  $_SESSION["wareshub"]["url"]["defsset-gitprotocol"] = $DefsSetGitProtocol;
 }  
 
 

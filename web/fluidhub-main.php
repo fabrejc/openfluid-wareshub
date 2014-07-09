@@ -112,6 +112,10 @@ if (array_key_exists("request",$_REQUEST))
     if (!isset($DefsSetGitHostname))
       $DefsSetGitHostname = $_SERVER["SERVER_ADDR"];
     
+    if (!isset($DefsSetGitProtocol))
+      $DefsSetGitProtocol = WebGitTools::guessProtocol();
+    
+    
     header ( "Content-Type: application/json; charset=UTF8" );
     
     echo "{\n";
@@ -155,7 +159,7 @@ if (array_key_exists("request",$_REQUEST))
             $ShortDesc = $WData["definition"]["shortdesc"];
           echo "        \"shortdesc\" : \"$ShortDesc\",\n";
           
-          echo "        \"git-url\" : \"".WebGitTools::getGitUrl($DefsSetGitHostname,$WData["git-url-subdir"])."\",\n";
+          echo "        \"git-url\" : \"".WebGitTools::getGitUrl($DefsSetGitProtocol,$DefsSetGitHostname,$WData["git-url-subdir"])."\",\n";
           
           echo "        \"users-ro\" : [\"".implode("\",\"",$WData["definition"]["users-ro"])."\"],\n";
           echo "        \"users-rw\" : [\"".implode("\",\"",$WData["definition"]["users-rw"])."\"]\n";
