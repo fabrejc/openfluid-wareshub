@@ -40,14 +40,11 @@ class MainPageLayout extends BasePageLayout
         <div class='container'>
         ";
 
-    echo $_SESSION["wareshub"]["labels"]["defsset-intro"];
-    echo "<br/>";
-    echo "&nbsp;&nbsp;<a href='".$_SERVER ["SCRIPT_NAME"]."?reset=1&waretype=".$this->WareType."'><span class='glyphicon glyphicon-refresh'></span>&nbsp;Reload informations</a>";
+    echo "<div class='intro-text'>".$_SESSION["wareshub"]["labels"]["defsset-intro"]."</div>";
 
     echo "
-        <br/><br/>
-        <div style='margin-left: 100px;'>
-        <ul class='nav nav-pills'>
+        <div class='text-center'>
+        <ul class='nav nav-pills centered-pills'>
         ";
 
     foreach ( static::$WARETYPES as $PillType )
@@ -63,8 +60,8 @@ class MainPageLayout extends BasePageLayout
     }
 
     echo "</ul>
-
       </div>
+      <div class='text-center'><a href='".$_SERVER ["SCRIPT_NAME"]."?reset=1&waretype=".$this->WareType."'><span class='glyphicon glyphicon-refresh'></span>&nbsp;Reload informations</a></div>        
     ";
 
     echo "</div></div>";
