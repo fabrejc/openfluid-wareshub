@@ -1,8 +1,39 @@
 <?php
 
 
+// set default value for login if not set
+if (!isset($DefsSetLoginEnabled))
+  $DefsSetLoginEnabled = false;
+
+
+include_once(__DIR__."/include/LoginManager.php");
+
 session_start();
 
+
+### login management
+
+if (!isset($_SESSION["login"]))
+{  
+  $_SESSION["login"] = new LoginManager();
+}
+
+if (isset($_REQUEST["loginuser"]))
+{
+  $Remember = isset($_REQUEST["loginremember"]); 
+  $_SESSION["login"]->connect($_REQUEST["loginuser"],$_REQUEST["loginpwd"],$Remember);
+}
+else if (isset($_REQUEST["disconnect"]))
+{
+  $_SESSION["login"]->disconnect();
+}
+else 
+{
+  $_SESSION["login"]->check();
+}
+
+
+### default ware type if not set
 
 $CurrentWareType="simulator";
 if (isset($_REQUEST["waretype"]))
@@ -10,18 +41,22 @@ if (isset($_REQUEST["waretype"]))
   $CurrentWareType=$_REQUEST["waretype"];
 }
 
+
+### reset sesseion informations if reset asked
+
 if (isset($_REQUEST["reset"]))
 {
-  session_destroy();
+  unset($_SESSION["wareshub"]);
   header("Location: ".$_SERVER["SCRIPT_NAME"]."?waretype=".$CurrentWareType);
 }
 
 
-#######
+#######################
 
 
 $WHSytemRootPath = realpath(__DIR__."/..");
 $DefsSetRootPath = realpath(dirname($_SERVER["SCRIPT_FILENAME"])."/..");
+
 
 include_once($WHSytemRootPath."/include/ReportingTools.php");
 include_once(__DIR__."/include/WebGitTools.php");
@@ -31,7 +66,9 @@ $RTools->setActiveDefinitionsSet($DefsSetRootPath);
 
 
 if (!isset($_SESSION["wareshub"]))
-{  
+{
+  ### load of informations for session
+  
   $Report = $RTools->getWebReport();
   
   $_SESSION["wareshub"] = array();
@@ -76,9 +113,10 @@ if (!isset($_SESSION["wareshub"]))
 }  
 
 
-#######
+#######################
 
 
+### page preparation
 
 $Page = NULL;
 
@@ -118,13 +156,12 @@ if (isset($_REQUEST["wareid"]))
     }
   }
 
-  if (! empty ( $CurrentBranch ))
+  if (!empty($CurrentBranch))
   {
-    if (empty ( $WareData ["branches"] [$CurrentBranch] ))
+    if (empty ($WareData["branches"][$CurrentBranch]))
     {
-      $_SESSION ["wareshub"] ["reporting"] [$_REQUEST ["waretype"] . "s"] [$_REQUEST ["wareid"]] ["branches"] [$CurrentBranch] = $RTools->getWebReportForBranch ( $_REQUEST ["waretype"], $_REQUEST ["wareid"], $CurrentBranch );
+      $_SESSION ["wareshub"]["reporting"][$_REQUEST["waretype"]."s"][$_REQUEST["wareid"]]["branches"][$CurrentBranch] = $RTools->getWebReportForBranch ( $_REQUEST ["waretype"], $_REQUEST ["wareid"], $CurrentBranch );
     }
-
     $Page->setWareBranch ( $CurrentBranch );
   }
 }
@@ -144,6 +181,8 @@ else
 
 $Page->generatePage();
 
+
+$_SESSION["login"]->resetErrorMessage();
 
 
 ?>

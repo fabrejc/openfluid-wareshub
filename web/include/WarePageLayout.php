@@ -439,12 +439,17 @@ class WarePageLayout extends BasePageLayout
 
     echo "</div>";
 
+    $GitURL = WebGitTools::getGitURL($_SESSION["wareshub"]["url"]["defsset-gitprotocol"],
+                                     $_SESSION["wareshub"]["url"]["defsset-githost"],
+                                     $WareData["git-url-subdir"],
+                                     $_SESSION["login"]->getUserName());
+    
     echo "<div class='col-md-6'>
           <div class='panel panel-success'>
           <div class='panel-heading'>git access</div>
             <div class='panel-body'>
               <b>URL:</b>
-              <input class='' type='text' readonly='readonly' size='40' value='".WebGitTools::getGitURL($_SESSION["wareshub"]["url"]["defsset-gitprotocol"],$_SESSION["wareshub"]["url"]["defsset-githost"],$WareData["git-url-subdir"])."'></input><br/>
+              <input class='' type='text' readonly='readonly' size='40' value='".$GitURL."'></input><br/>
               <br>
               <li>Read access for ".$this->getGrantedUsersString($WareData["definition"]["users-ro"])."</li>
               <li>Write access for ".$this->getGrantedUsersString($WareData["definition"]["users-rw"])."</li>
