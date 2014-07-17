@@ -27,9 +27,13 @@ class WebGitTools
   // =====================================================================
   
   
-  public static function getGitURL($Protocol,$Host,$URLSubDir)
+  public static function getGitURL($Protocol,$Host,$URLSubDir,$Username="")
   {
-    return $Protocol.$Host."/".$URLSubDir;
+    $AtUser = "";
+    if (!empty($Username))
+      $AtUser = $Username."@";
+     
+    return $Protocol.$AtUser.$Host."/".$URLSubDir;
   }
   
     

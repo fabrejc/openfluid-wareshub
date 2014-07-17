@@ -3,7 +3,6 @@
 
 include_once(__DIR__."/WebGitTools.php");
 
-
 abstract class BasePageLayout
 {
   
@@ -147,6 +146,83 @@ abstract class BasePageLayout
   // =====================================================================
       
   
+  private function getHiddenValuesForLoginBox()
+  {
+    $HiddenTxt = "";
+    
+    if (isset($_REQUEST["waretype"]))
+      $HiddenTxt .= "<input type='hidden' name='waretype' value='".$_REQUEST["waretype"]."'>";
+    
+    if (isset($_REQUEST["wareid"]))
+      $HiddenTxt .= "<input type='hidden' name='wareid' value='".$_REQUEST["wareid"]."'>";
+    
+    if (isset($_REQUEST["warebranch"]))
+      $HiddenTxt .= "<input type='hidden' name='warebranch' value='".$_REQUEST["warebranch"]."'>";
+    
+    return $HiddenTxt;
+  }
+  
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
+  private function getLoginBox()
+  {
+    if (!$GLOBALS["DefsSetLoginEnabled"])
+      return "";
+    
+    if ($_SESSION["login"]->isConnected())
+    {
+      return "<form class='navbar-form navbar-right' role='form' action='index.php' method='post'>
+          <div class='form-group login-group'>
+          <span class='glyphicon glyphicon-user'></span>&nbsp;".$_SESSION["login"]->getUserName()."&nbsp;&nbsp;
+          <input type='hidden' name='disconnect' value='1'>".$this->getHiddenValuesForLoginBox()."
+          <button type='submit' class='btn btn-default btn-xsm'>Sign out</button>
+          </div>
+          </form>";      
+      
+    }
+    else
+    {
+      $ErrMsg = $_SESSION["login"]->getErrorMessage();
+        
+      if (!empty($ErrMsg))
+        $ErrMsg = "<span class='login-errormsg'>$ErrMsg</span>";
+          
+      return "
+            <div class='navbar-form navbar-right'>$ErrMsg &nbsp;            
+              <button type='button' class='btn btn-default navbar-btn btn-xsm' data-container='body' data-toggle='login-popover' data-placement='bottom'>Sign in</button>
+              <div id='login-popover-content-wrapper' style='display: none'>
+                <form role='form' action='index.php' method='post'>
+                  <div class='form-group'>
+                    <input type='text' class='form-control input-sm' placeholder='Username' name='loginuser'>
+                    <input type='password' class='form-control input-sm login-field' placeholder='Password' name='loginpwd'>
+                    <label class='login-checkbox'>
+                      <input type='checkbox' class='login-checkbox' name='loginremember'>&nbsp;Remember me for 14 days
+                    </label>".$this->getHiddenValuesForLoginBox()."  
+                  </div>            
+                 <button type='submit' class='btn btn-default btn-sm'>Sign in</button>
+               </form>
+             </div>
+           </div> 
+           <script>
+             $('button[data-toggle=login-popover]').popover({ 
+               html : true,
+               content: function() {
+                 return $('#login-popover-content-wrapper').html();
+               }
+             });
+	        </script>                    
+          ";
+    }
+  }
+  
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
   public function generatePage()
   {
     echo "
@@ -182,7 +258,10 @@ abstract class BasePageLayout
 
     echo "
         <nav class='navbar navbar-topmenu' role='navigation'>
-          <div class='container'><h3>".$_SESSION["wareshub"]["labels"]["defsset-title"]."</h3></div>
+          <div class='container'>
+            <div class='navbar-header'>".$_SESSION["wareshub"]["labels"]["defsset-title"]."</div>
+            <div class=''>".$this->getLoginBox()."</div>    
+          </div>              
         </nav>
      ";
     
