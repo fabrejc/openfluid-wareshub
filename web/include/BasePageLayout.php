@@ -36,6 +36,8 @@ abstract class BasePageLayout
   );
   
   
+  protected $HTMLExtraScripts;
+  
   // =====================================================================
   // =====================================================================
     
@@ -45,6 +47,7 @@ abstract class BasePageLayout
     $this->WareID = "";
     $this->WareType = "";
     $this->WareBranch = "";
+    $this->HTMLExtraScripts = "";
   }
    
   // =====================================================================
@@ -74,8 +77,6 @@ abstract class BasePageLayout
     
     if (!empty($VersionsArray))
     {
-      
-      
       if (array_key_exists("openfluid-current-version",$_SESSION["wareshub"]["definitions-config"]) &&
           in_array($_SESSION["wareshub"]["definitions-config"]["openfluid-current-version"],$VersionsArray))
         $CompatVersions = $this->getCurrentBranchStarString();
@@ -167,6 +168,17 @@ abstract class BasePageLayout
   // =====================================================================
   
   
+  protected function isUserAdmin()
+  {
+    return ($_SESSION["login"]->isConnected() && 
+            in_array($_SESSION["login"]->getUserName(),$GLOBALS["DefsSetAdminUsers"]));
+  }
+  
+
+  // =====================================================================
+  // =====================================================================
+  
+  
   private function getLoginBox()
   {
     if (!$GLOBALS["DefsSetLoginEnabled"])
@@ -174,14 +186,18 @@ abstract class BasePageLayout
     
     if ($_SESSION["login"]->isConnected())
     {
+      $AdminLink = "";
+      if ($this->isUserAdmin())
+        $AdminLink = "&nbsp;&nbsp;<a href='".$_SERVER ["SCRIPT_NAME"]."?admin=1' class='btn btn-warning btn-xsm' role='button'>admin</a>";          
+          
+      
       return "<form class='navbar-form navbar-right' role='form' action='index.php' method='post'>
           <div class='form-group login-group'>
           <span class='glyphicon glyphicon-user'></span>&nbsp;".$_SESSION["login"]->getUserName()."&nbsp;&nbsp;
           <input type='hidden' name='disconnect' value='1'>".$this->getHiddenValuesForLoginBox()."
-          <button type='submit' class='btn btn-default btn-xsm'>Sign out</button>
+          <button type='submit' class='btn btn-default btn-xsm'>Sign out</button>$AdminLink
           </div>
           </form>";      
-      
     }
     else
     {
@@ -236,6 +252,7 @@ abstract class BasePageLayout
       <link rel='stylesheet' href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css'>
       <script src='//code.jquery.com/jquery-1.11.0.min.js'></script>
       <script src='//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js'></script>
+      ".$this->HTMLExtraScripts."
     
       <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
       <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

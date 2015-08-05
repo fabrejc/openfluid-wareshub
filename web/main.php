@@ -121,7 +121,14 @@ if (!isset($_SESSION["wareshub"]))
 $Page = NULL;
 
 
-if (isset($_REQUEST["wareid"]))
+if (isset($_REQUEST["admin"]))
+{
+  include_once(__DIR__."/include/AdminPageLayout.php");
+  
+  $Page = new AdminPageLayout();
+  
+}
+elseif (isset($_REQUEST["wareid"]))
 {
   include_once(__DIR__."/include/WarePageLayout.php");
   
@@ -139,8 +146,6 @@ if (isset($_REQUEST["wareid"]))
   else
   {
     $WareData = $_SESSION["wareshub"]["reporting"][$_REQUEST["waretype"]."s"][$_REQUEST["wareid"]];
-
-
 
     if (!empty($WareData["compat-versions"]))
     {
@@ -174,8 +179,6 @@ else
   
   if (isset($_REQUEST["search"]))
     $Page->setSearch($_REQUEST["search"]);
-  
-  
 }
   
 
