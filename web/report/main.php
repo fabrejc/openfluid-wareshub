@@ -54,8 +54,8 @@ if (isset($_REQUEST["reset"]))
 #######################
 
 
-$WHSytemRootPath = realpath(__DIR__."/..");
-$DefsSetRootPath = realpath(dirname($_SERVER["SCRIPT_FILENAME"])."/..");
+$WHSytemRootPath = realpath(__DIR__."/../..");
+$DefsSetRootPath = realpath(dirname($_SERVER["SCRIPT_FILENAME"])."/../..");
 
 
 include_once($WHSytemRootPath."/include/ReportingTools.php");
@@ -79,9 +79,9 @@ if (!isset($_SESSION["wareshub"]))
   $_SESSION["wareshub"]["dirs"] = array();
   $_SESSION["wareshub"]["dirs"]["system-root"] = $WHSytemRootPath;
   $_SESSION["wareshub"]["dirs"]["system-config"] = $WHSytemRootPath."/config";
-  $_SESSION["wareshub"]["dirs"]["system-web"] = $WHSytemRootPath."/web";
+  $_SESSION["wareshub"]["dirs"]["system-web-report"] = $WHSytemRootPath."/web/report";
   $_SESSION["wareshub"]["dirs"]["defsset-root"] = $DefsSetRootPath;  
-  $_SESSION["wareshub"]["dirs"]["defsset-web"] = $DefsSetRootPath."/web";
+  $_SESSION["wareshub"]["dirs"]["defsset-web-report"] = $DefsSetRootPath."/web/report";
   $_SESSION["wareshub"]["definitions-config"] = $RTools->getActiveDefsConfig();
   
   

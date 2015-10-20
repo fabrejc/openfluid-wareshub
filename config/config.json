@@ -17,7 +17,8 @@
 		"localconfig-file" : "localconfig.json",
 		"waresdefs-dir" : "definitions",
 		"githooks-dir" : "githooks",
-		"web-dir" : "web",
+		"webreport-dir" : "web/report",
+		"webapi-dir" : "web/api",
 		"templates-dir" : "templates",
 		"templates-files" : {
 			"main-apache" : "main-apache.tpl.conf",

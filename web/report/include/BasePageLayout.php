@@ -179,23 +179,35 @@ abstract class BasePageLayout
   // =====================================================================
   
   
+  private function getAdminBox()
+  {
+    $AdminLink = "";
+    
+    if ($_SESSION["login"]->isConnected() && $this->isUserAdmin())
+    {
+      $AdminLink = "&nbsp;&nbsp;<a href='".$_SERVER ["SCRIPT_NAME"]."?admin=1' class='btn btn-warning btn-xsm' role='button'>admin</a>";
+    }
+
+    return $AdminLink;
+  }
+  
+  
+  // =====================================================================
+  // =====================================================================
+  
+  
   private function getLoginBox()
   {
     if (!$GLOBALS["DefsSetLoginEnabled"])
       return "";
     
     if ($_SESSION["login"]->isConnected())
-    {
-      $AdminLink = "";
-      if ($this->isUserAdmin())
-        $AdminLink = "&nbsp;&nbsp;<a href='".$_SERVER ["SCRIPT_NAME"]."?admin=1' class='btn btn-warning btn-xsm' role='button'>admin</a>";          
-          
-      
+    {      
       return "<form class='navbar-form navbar-right' role='form' action='index.php' method='post'>
           <div class='form-group login-group'>
           <span class='glyphicon glyphicon-user'></span>&nbsp;".$_SESSION["login"]->getUserName()."&nbsp;&nbsp;
           <input type='hidden' name='disconnect' value='1'>".$this->getHiddenValuesForLoginBox()."
-          <button type='submit' class='btn btn-default btn-xsm'>Sign out</button>$AdminLink
+          <button type='submit' class='btn btn-default btn-xsm'>Sign out</button>
           </div>
           </form>";      
     }
@@ -264,7 +276,7 @@ abstract class BasePageLayout
       <style  type='text/css'>
     ";
 
-    echo file_get_contents($_SESSION["wareshub"]["dirs"]["system-web"]."/css/wareshub.css");
+    echo file_get_contents($_SESSION["wareshub"]["dirs"]["system-web-report"]."/css/wareshub.css");
     
     echo "
       </style>  
@@ -276,7 +288,7 @@ abstract class BasePageLayout
     echo "
         <nav class='navbar navbar-topmenu' role='navigation'>
           <div class='container'>
-            <div class='navbar-header'>".$_SESSION["wareshub"]["labels"]["defsset-title"]."</div>
+            <div class='navbar-header'>".$_SESSION["wareshub"]["labels"]["defsset-title"].$this->getAdminBox()."</div>
             <div class=''>".$this->getLoginBox()."</div>    
           </div>              
         </nav>

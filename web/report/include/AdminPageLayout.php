@@ -107,7 +107,7 @@ class AdminPageLayout extends BasePageLayout
     $SingularWareType = rtrim($WareType,"s");
     
     
-    echo "ID;compat-version;pdf;contacts;users-ro;users-rw\n";
+    echo "ID;compat-version;pdf;contacts;status;users-ro;users-rw\n";
 
     foreach ($WareInfos as $WareID => $WareData)
     {
@@ -131,12 +131,15 @@ class AdminPageLayout extends BasePageLayout
 
         $BranchInfos = $RTools->getWebReportForBranch($SingularWareType,$WareID,$CurrentBranch);
         if (array_key_exists("wareshub",$BranchInfos))
+        {
           echo implode("|",$BranchInfos["wareshub"]["contacts"]).";";
+          echo $BranchInfos["wareshub"]["status"].";";
+        }
         else
-          echo "none;";
+          echo "none;unknown;";
       }
       else
-        echo "none;";
+        echo "none;unknown;unknown;";
         
               
       echo implode("|",$WareData["definition"]["users-ro"]).";".implode("|",$WareData["definition"]["users-rw"]);
@@ -155,15 +158,14 @@ class AdminPageLayout extends BasePageLayout
   
   function printWaresDataLinks()
   {
-    echo "<h3>Detailled wares data as CSV files</h3>
-           <br/>";
+    echo "<h3>Wares metadata as CSV files</h3><br/>";
     
     echo "<ul>";
     foreach (static::$WARETYPES as $WareType)
     {
-      echo "<li><a href='".$_SERVER["SCRIPT_NAME"]."?admin=1&dloadreport=".$WareType."s'>".$WareType."s</li>";
+      echo "<li><a href='".$_SERVER["SCRIPT_NAME"]."?admin=1&dloadreport=".$WareType."s'>Download metadata for ".$WareType."s</li>";
     }
-    echo "</ul>";
+    echo "</ul><br/>";
   }
   
   

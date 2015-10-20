@@ -31,8 +31,11 @@ class AdministrationTools extends ReportingTools
     $Replacements["@@OFWHUB_APACHE_ROOTPATH@@"] = $this->ActiveDefsInstanceRootPath."/".
         $this->WHSystemConfig["instance"]["apache-conf-rootdir"];
   
-    $Replacements["@@OFWHUB_WEB_ROOTPATH@@"] = $this->ActiveDefsPath."/".$this->WHSystemConfig["definitions"]["web-dir"];
-    $Replacements["@@OFWHUB_WEB_URLSUBDIR@@"] = $this->ActiveDefsConfig["url-web-subdir"];
+    $Replacements["@@OFWHUB_WEBREPORT_ROOTPATH@@"] = $this->ActiveDefsPath."/".$this->WHSystemConfig["definitions"]["webreport-dir"];
+    $Replacements["@@OFWHUB_WEBREPORT_URLSUBDIR@@"] = $this->ActiveDefsConfig["url-webreport-subdir"];
+    
+    $Replacements["@@OFWHUB_WEBAPI_ROOTPATH@@"] = $this->ActiveDefsPath."/".$this->WHSystemConfig["definitions"]["webapi-dir"];
+    $Replacements["@@OFWHUB_WEBAPI_URLSUBDIR@@"] = $this->ActiveDefsConfig["url-webapi-subdir"];
 
     $Replacements["@@OFWHUB_RESOURCES_ROOTPATH@@"] = $this->ActiveDefsInstanceRootPath."/".
         $this->WHSystemConfig["instance"]["web-resources-rootdir"];

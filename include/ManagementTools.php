@@ -123,8 +123,8 @@ class ManagementTools
     if (!array_key_exists("waresdefs-dir", $this->WHSystemConfig["definitions"]))
       throw new Exception("Missing item \"definitions/waresdefs-dir\" in configuration");
   
-    if (!array_key_exists("web-dir", $this->WHSystemConfig["definitions"]))
-      throw new Exception("Missing item \"definitions/web-dir\" in configuration");
+    if (!array_key_exists("webreport-dir", $this->WHSystemConfig["definitions"]))
+      throw new Exception("Missing item \"definitions/webreport-dir\" in configuration");
   
     if (!array_key_exists("templates-dir", $this->WHSystemConfig["definitions"]))
       throw new Exception("Missing item \"definitions/templates-dir\" in configuration");
