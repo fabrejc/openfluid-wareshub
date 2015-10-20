@@ -156,8 +156,8 @@ class ManagementTools
     if (!array_key_exists("instance-path", $this->ActiveDefsConfig))
       throw new Exception("Missing item \"instance-path\" in configuration");
   
-    if (!array_key_exists("url-web-subdir", $this->ActiveDefsConfig))
-      throw new Exception("Missing item \"url-web-subdir\" in configuration");
+//    if (!array_key_exists("url-web-subdir", $this->ActiveDefsConfig))
+//      throw new Exception("Missing item \"url-web-subdir\" in configuration");
   
     if (!array_key_exists("url-git-subdir", $this->ActiveDefsConfig))
       throw new Exception("Missing item \"url-git-subdir\" in configuration");

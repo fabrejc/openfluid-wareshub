@@ -7,6 +7,9 @@ function getWaresInfos($WareType,$Username)
 {
   global $WHSytemRootPath;
   global $DefsSetRootPath;
+  global $DefsSetGitProtocol;
+  global $DefsSetGitHostname;
+  
 
   include_once($WHSytemRootPath."/include/ReportingTools.php");
   include_once($WHSytemRootPath."/web/report/include/WebGitTools.php");
@@ -116,7 +119,7 @@ $app = new \Slim\Slim();
 
 
 // handle / : FluidHub informations
-$app->get('/',function ()
+$app->get('/',function () use($app)
 {
   $app->response->headers->set('Content-Type', 'application/json ; charset=UTF8');
   
